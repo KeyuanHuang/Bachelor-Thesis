@@ -1,0 +1,1349 @@
+\documentclass[a4paper]{article}
+
+%%%%%% Packages %%%%%%
+\usepackage{anyfontsize}
+\usepackage[fontset=windows, zihao=5]{ctex}
+\usepackage{amsmath, amsthm, amssymb, amsfonts}
+\usepackage{mathrsfs}
+\usepackage[all]{xy}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+%%%%% Style Settings %%%%%
+% Hyper links
+\definecolor{winered}{rgb}{0.5,0,0}   % 酒红色
+\definecolor{indigo}{rgb}{0.0, 0.25, 0.42}   % 靛青色
+\hypersetup{
+    colorlinks=true, 
+    linkcolor=indigo,
+    urlcolor=indigo,
+    filecolor=indigo,
+    citecolor=indigo,
+    linktoc=all,    % Make the link cover the whole line
+    bookmarksnumbered=true,
+    bookmarksopen=true
+}
+
+% pagestyle
+\usepackage{fullpage}
+\setlength{\headsep}{5pt}
+\linespread{1.35}
+
+% lists
+\usepackage[shortlabels, inline]{enumitem}
+\setenumerate{nosep, label=(\alph*)}
+\setitemize{nosep}
+
+% footnotes & captions
+\usepackage[perpage, stable, flushmargin]{footmisc}
+\usepackage[font=small, labelfont={bf}]{caption}
+
+%%%%% Theorem Environment & Numbering %%%%%
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+\theoremstyle{definition}
+\newtheorem{theorem}{\indent 定理}[section]
+\newtheorem{lemma}[theorem]{\indent 引理}
+\newtheorem{conjecture}[theorem]{\indent 猜想}
+\newtheorem{proposition}[theorem]{\indent 命题}
+\newtheorem{corollary}[theorem]{\indent 推论}
+\newtheorem{example}[theorem]{\indent 例}
+\newtheorem*{definition}{\indent 定义}
+\newtheorem*{notation}{\indent 记号}
+\newtheorem*{problem}{\indent 问题}
+\newtheorem*{remark}{\indent\normalfont\bfseries 注}
+
+%%%%% 汉化 %%%%%
+\newcommand{\pftitle}{\indent\normalfont\bfseries}
+\renewcommand{\proofname}{\normalfont\bfseries\indent 证明}
+% 脚注样式改为圆圈数字
+\usepackage{pifont}
+\renewcommand{\thefootnote}{\ding{\numexpr171+\value{footnote}}}
+
+%%%%% math commands %%%%%
+% Operators
+\let\Re\relax\DeclareMathOperator{\Re}{Re}
+\let\Im\relax\DeclareMathOperator{\Im}{Im}
+\DeclareMathOperator{\dist}{dist}
+\DeclareMathOperator{\diam}{diam}
+\DeclareMathOperator{\spt}{spt}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\rank}{rank}
+
+% Symbols
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\nnorm}[1]{\lVert #1 \rVert}
+\newcommand{\bk}[2]{\langle #1,\, #2 \rangle}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+\renewcommand{\mid}{:\,}
+\newcommand{\eval}[2]{\left.{#1}\right\rvert_{#2}}    % evaluation (a vertical line)
+\newcommand{\at}{\left.\vphantom{\int}\right\rvert}     % evaluation (a vertical line)
+\renewcommand{\d}{\mathop{}\!d}    % d in the integral (with proper spacing)
+\newcommand{\dx}{\mathop{}\!dx}
+\newcommand{\dy}{\mathop{}\!dy}
+\newcommand{\dz}{\mathop{}\!dz}
+\newcommand{\dt}{\mathop{}\!dt}
+\newcommand{\dd}[2]{\frac{d{#1}}{d{#2}}}
+\newcommand{\pd}[2]{\frac{\partial{#1}}{\partial{#2}}}
+\newcommand{\ipd}[2]{\partial{#1}/\partial{#2}}    % inline partial derivative
+\newcommand{\covin}[1]{\ \text{in}\ {#1}}
+\newcommand{\id}{\text{id}}    % identity map
+
+% Alias (short version of existing commands)
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+\newcommand{\f}[2]{\frac{#1}{#2}}
+\newcommand{\p}{\partial}
+\newcommand{\bm}[1]{\boldsymbol{#1}}
+\newcommand{\ol}[1]{\overline{#1}}
+\newcommand{\mc}[1]{\mathcal{#1}}
+\newcommand{\mb}[1]{\mathbb{#1}}
+\newcommand{\ms}[1]{\mathscr{#1}}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\sm}{\setminus}
+\newcommand{\ls}{\lesssim}
+\newcommand{\gs}{\gtrsim}
+\renewcommand{\emptyset}{\varnothing}
+\newcommand{\iso}{\cong}
+
+% Letters
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\T}{\mathbb{T}}
+\newcommand{\e}{\varepsilon}
+\newcommand{\vp}{\varphi}
+
+
+\begin{document}
+
+\title{Kakeya 猜想及其相关问题}
+\author{黄克元}
+\date{}
+\maketitle
+
+\begin{abstract}
+    本文中, 我们简要概述了现有文献中用于解决 Kakeya 问题的几类技术及其进展, 包括组合几何方法、加性组合方法、尺度归纳方法以及代数几何方法. 然后我们讨论了 Kakeya 问题的几种不同的表述方式以及它们之间的关系, 以及 Kakeya 问题的一些基本元素以及相关的基本论证技巧. 随后我们更深入探讨地了组合几何方法在 Kakeya 问题上的应用, 并介绍了 C\'ordoba、Bourgain 和 Wolff 的经典结果及其证明; 我们还介绍了 Dvir 完全解决有限域上 Kakeya 问题的多项式方法. 最后我们简要介绍了 Fourier 分析和 Kakeya 问题的联系.
+\end{abstract}
+
+\section{Kakeya 问题简介}
+
+1917 年, 日本数学家 Soichi Kakeya 提出了 \textbf{Kakeya 转针问题}: 把平面上的单位长度的线段旋转一周, 至少需要扫过多少面积? 恰恰在同一年, 俄罗斯数学家 Besicovitch 在研究一个和 Riemann 积分相关的问题时也考虑了相同的问题. 他引入了如下的概念:
+
+\begin{definition}
+    称 $E\subset\R^n$ 为 \textbf{Kakeya 集} (又称 \textbf{Besicovitch 集}), 若 
+    \begin{equation*}
+        \forall e\in S^{n-1}\ \exists x\in\R^n:\ x+te\in E\ \forall t\in [-1/2, 1/2].
+    \end{equation*}
+    也就是说, $E$ 中包含了平行于任意方向的单位线段.
+\end{definition}
+
+在 1927 年, Besicovitch 给出了 Kakeya 转针问题的回答, 他证明了:
+
+\begin{theorem}[Besicovitch\cite{besicovitch1928kakeya}]
+    $\R^n$ 中存在 Lebesgue 测度为零的 Kakeya 集.
+\end{theorem}
+
+关于 ``Kakeya 集可以有多小'' 这个问题, 人们进一步提出了 \textbf{Kakeya 集猜想}:
+
+\begin{conjecture}[Kakeya 集猜想]
+    $\R^n$ 中 Kakeya 集的 Hausdorff 维数和 Minkowski 维数均为 $n$.
+\end{conjecture}
+
+目前 Kakeya 集猜想仅在 $n=2$ 时得到解决\cite{davies1971some}, 其余维数的情形仍然公开.
+
+在 Kakeya 问题的实际研究中, 人们大多尝试证明的是一个比原猜想略微强一些的定量版本的 Kakeya 猜想, 它是用 \textbf{Kakeya 极大算子}来描述的. 这个概念自然地出现在调和分析的许多问题中, 下面给出详细的定义.
+
+\begin{definition}
+    设 $a\in\R^n$, $\omega\in S^{n-1}$, $\delta>0$, 定义\textbf{$1\times\delta$ 圆柱体} (tube) $T_\omega^\delta(a)$ 为
+    \[
+        T_\omega^\delta(a) := \set{x\in\R^n\mid\abs{(x-a)\cdot \omega}\leq 1/2,\ \abs{(x-a)^\perp}\leq \delta},
+    \]
+    其中 $x^\perp := x - (x\cdot \omega)\omega$. 我们称 $a$ 为圆柱体的\textbf{中心}, $\omega$ 为圆柱体的\textbf{轴向}.
+\end{definition}
+
+\begin{definition}[Kakeya 极大算子]
+    对 $f\in L^1_{\text{loc}}(\R^n)$ 和 $\delta>0$, 定义 $f_\delta^*: S^{n-1}\to\R$ 为
+    \[
+        f_\delta^*(\omega) := \sup_{a\in\R^n}\f{1}{\abs{T_\omega^\delta(a)}}\int_{T_\omega^\delta(a)}\abs{f}.
+    \]
+\end{definition}
+
+\begin{conjecture}[Kakeya 极大算子猜想]
+    \label{conj: 极大算子猜想}
+    若 $1\leq p\leq n$, $0<\delta\ll 1$, 则
+    \begin{equation}
+        \label{eq: kakeya-maximal-conjecture-1}
+        \norm{f^*_\delta}_{L^p(S^{n-1})}\ls_\e\delta^{-n/p+1-\e}\norm{f}_{L^p(\R^n)}\quad\forall\e>0.
+    \end{equation}
+\end{conjecture}
+
+\begin{notation}
+    在本文中, 我们默认允许所有不等式中隐含的常数依赖于欧式空间的维数 $n$ 以及 $L^p$ 空间的指数; 也就是说, 我们不显式地写出常数对 $n$ 和 $p$ 的依赖. 例如, 式 \eqref{eq: kakeya-maximal-conjecture-1} 中的常数有可能还依赖于 $p$ 和 $n$. 
+\end{notation}
+
+事实上 Kakeya 极大算子猜想比 Kakeya 集猜想要更强; 式 \eqref{eq: kakeya-maximal-conjecture-1} 蕴含着 $\R^n$ 中任一 Kakeya 集的 Hausdorff 维数至少是 $p$. (证明见命题 \ref{prop: maximal func and kakeya dim})
+
+当 $p=1$ 时, \eqref{eq: kakeya-maximal-conjecture-1} 是显然的. 故由 Marcinkeiwicz 插值定理可知, 如果某个 $p_0$ 使得 \eqref{eq: kakeya-maximal-conjecture-1} 成立, 则当 $1\leq p\leq p_0$ 时 \eqref{eq: kakeya-maximal-conjecture-1} 都成立. 因而我们的目标是对尽可能大的 $p$ 证明 \eqref{eq: kakeya-maximal-conjecture-1}. 
+
+Kakeya 极大算子猜想至今仅有 $n=2$ 时的情形已经解决\cite{davies1971some}. 当 $n\geq 3$ 时迄今为止的最佳结果如下表所示:
+
+\begin{center}
+    \begin{tabular}{c|c|c}
+        $n=3$ & $p = 2.5 + \e_0\ (\e_0>0)$ & Katz-Zahl, 2019\cite{katz2019improved}\\
+        \hline
+        $n=4$ & $p = 3 + (\sqrt{17665}-97)/600\approx 3.059$ & Katz-Zahl, 2020\cite{katz2020kakeya}\\
+        \hline
+        $n=5$ & $p = 3.6$ & Zahl, 2021\cite{zahl2021new}\\
+        \hline
+        $n=6$ & $p = 4$ & Wolff, 1995\cite{wolff1995improved}\\
+        \hline
+        $n\geq 7$ & $p = (2-\sqrt{2})n + \e_n\ (\e_n>0)$ & Zahl, 2021\cite{zahl2021new}
+    \end{tabular}
+\end{center}
+
+% 由 $\ell^p$ 和 $\ell^{p'}$ 的对偶性, 可以找到 $\set{y_\omega}_{\omega\in\Omega}\subset\R$, 使得
+
+Kakeya 极大算子猜想还有一个对偶的等价版本 (猜想 \ref{conj: 极大算子猜想, 对偶版本}), 它的表述中隐去了 Kakeya 极大算子, 更能够反映 Kakeya 极大算子猜想的几何本质. 我们将在 \ref{subsec: 对偶极大算子猜想} 小节中证明对偶版本和原版本的等价性.
+
+\begin{conjecture}[Kakeya 极大算子猜想, 对偶版本]
+    \label{conj: 极大算子猜想, 对偶版本}
+    设 $1\leq p\leq n,\ 0<\delta\ll 1$. 若 $\mb{T}=\set{T}$ 是一族轴向 $\delta$-分离的 $1\times\delta$ 圆柱体, 则
+    \begin{equation}
+        \label{eq: Kakeya maximal dual}
+        \norm{\sum_{T\in\mb{T}} \chi_T}_{p'}\ls_\e\delta^{-n/p+1-\e}\left(\sum_{T\in\mb{T}}\abs{T}\right)^{1/p'}\quad\forall\e>0.
+    \end{equation}
+    其中 $1/p+1/p'=1$.
+\end{conjecture}
+
+在式 \eqref{eq: Kakeya maximal dual} 中, 若 $\mb{T}$ 中的圆柱体的重合程度越高, 则左边就越大; 而右边是只和 $\mb{T}$ 中圆柱体的个数有关, 和圆柱体具体摆放的方式无关. 这说明 Kakeya 极大算子猜想本质上是一个组合几何的问题: 它研究的是轴向 $\delta$-分离的 $1\times\delta$ 圆柱体的 ``重合程度'' 最多有多大. 而 $1\times\delta$ 圆柱体可以看成是单位线段的 ``加粗'', 由此当 $\delta$ 很小时可以自然地把 Kakeya 极大算子猜想和 Kakeya 集联系起来; 我们将在 \ref{subsec: 极大算子 vs Kakeya 集} 小节中说明 Kakeya 极大算子猜想蕴含 Kakeya 集猜想.
+
+尽管 Kakeya 猜想尚未被完全解决, 研究者已经发现它和数学中很多其他重要问题有紧密的联系. Kakeya 猜想本身是调和分析中极为重要的问题, 它的解决将对限制性猜想、Bochner-Riesz 猜想、波动方程局部光滑性猜想等调和分析中的核心问题有重大推动作用\cite{tao2001rotating,bourga1991besicovitch}. Kakeya 问题还可以和很多其他领域和问题产生联系, 例如一些加性组合的问题\cite{laba2008harmonic}、解析数论中的 Montgomery 猜想\cite{bourgain1993distribution}、计算机科学中随机数生成的问题\cite{dvir2011kakeya}等.
+
+\section{现有研究方法概述}
+
+Kakeya 猜想 (以及 Kakeya 极大算子猜想) 从形式上来看虽然是几何测度论和调和分析中的问题, 但在其发展历程中却用到来自很多其他数学分支的工具, 这些工具也起到了很好的效果. 接下来我们简要介绍人们目前尝试解决 Kakeya 问题的主要方向.
+
+\subsection{组合几何的方法}
+
+从直观上来说, Kakeya 问题研究的是不同方向的单位线段可以有多大程度的重合. 重合几何 (incidence geometry) 是组合几何的一个分支, 其研究对象正是各种几何元素 (点、线、面) 的重合现象. 因此, 人们开始尝试在 Kakeya 问题中使用组合几何的技巧.\cite{wolff1999recent} 为此需要引入 Kakeya 问题的一个离散版本的简化模型. 
+
+\begin{definition}
+    设 $\mb{F}$ 是 $q$ 元有限域. 称 $E\subset\mb{F}^n$ 是 $\F^n$ 中的 \textbf{Kakeya 集}, 若 $E$ 在每个 ``方向'' 上都包含一条 ``直线'', 即
+    \[
+        \forall e\in\mb{F}^n\sm\set{0}\ \exists a\in\mb{F}^n:\ a+te\in E\ \forall t\in\mb{F}.
+    \]
+\end{definition}
+
+\begin{conjecture}[有限域上的 Kakeya 猜想]
+    \label{conj: 有限域}
+    $\F^n$ 中任一 Kakeya 集都满足 $\# E\gs_n q^n$.
+\end{conjecture}
+
+下面简单阐述以下在 Kakeya 问题上应用组合几何技巧的想法. 利用 ``两直线至多交于一点'' 这一最基本的观察, 可以证明 $\# E\gs_n q^{(n+1)/2}$. 而欧氏空间 $\R^n$ 中的圆柱体可以看成 $\F^n$ 中 ``直线'' 的 ``加厚''; 两个圆柱体之间重合部分的测度可以被它们轴向的差距来控制, 即
+\begin{equation}
+    \label{eq: 圆柱体重合部分的测度估计}
+    \abs{T_\omega^\delta(a)\cap T_{\omega'}^\delta(b)}\ls\frac{\delta^n}{\abs{\omega-\omega'}+\delta}.
+\end{equation}
+式 \eqref{eq: 圆柱体重合部分的测度估计} 可以在连续情形代替 ``两直线至多交于一点'', 如此就可以把组合几何的论证推广到欧氏空间中. 按这个想法, Bourgain 在 1991 年证明了 Kakeya 极大算子猜想在 $p=(n+1)/2$ 时的情形\cite{bourga1991besicovitch}. 
+
+利用更复杂的组合几何的技巧可以把有限域上 Kakeya 问题的结果改进到 $\# E\gs_n q^{(n+2)/2}$; Wolff 在 1995 年把这个想法推广到连续情形, 提出了 ``毛刷'' 论证 (hairbrush argument), 进而证明了 Kakeya 极大算子猜想在 $p=(n+2)/2$ 时的情形.\cite{wolff1995improved} 在 2021 年, Katz 和 Zahl 把 Wolff 的想法推广为 ``平面刷'' 论证 (planebrush argument), 进而证明了 Kakeya 极大算子猜想在 $n=4,\ p\approx 3.059$ 时的情形\cite{katz2020kakeya}, 这也是迄今为止四维情形的最优结果. 
+
+\subsection{加性组合的方法}
+
+最早在 Kakeya 问题上应用的加性组合方法是 Bourgain 提出的 ``三切片'' 论证 (three-slices argument)\cite{bourgain1999dimension}. 下面我们简述其想法. 
+
+设 $\F$ 为 $q$ 元有限域, 记 $A=\set{0}\times\F^{n-1}$, $B=\set{1}\times\F^{n-1}$, $C=\set{1/2}\times\F^{n-1}$ (为简单起见不妨设 $q$ 是奇数使得 $1/2$ 有定义). 从直观上来说, 点对 $(a, b)\in A\times B$ 确定的 ``直线'' 的方向和 $a-b$ 的值是一一对应的. 而 $(a+b)\in 2C$, 并且 $C$ 是一个比较小的集合 ($\# C\sim q^{n-1}$), 这就导致 $a-b$ 可取的值不会太多, 因为
+\[
+    a + b = a' + b' \implies a - b' = a' - b.
+\]
+由此就可以对 $\F^n$ 中 Kakeya 集的元素个数进行估计. 更详细的讨论可以查阅 Katz 和 Tao 的综述\cite{katz2002recent}.
+
+利用 ``三切片'' 论证配合加性组合中的一些结论, Bourgain 证明了 $\R^n$ 中 Kakeya 集的 Minkowski 维数 $d\geq \frac{n-1}{2-1/13} + 1$\cite{bourgain1999dimension}, 略微改进了他此前的 $d\geq \frac{n+1}{2} = \frac{n-1}{2} + 1$. 此后加性组合的方法仍然有所进展, Katz 和 Tao 证明了 Minkowski 维数 $d\geq \frac{n-1}{\alpha} + 1$, 其中 $\alpha\approx 1.675$ 为多项式 $\alpha^3-4\alpha + 2$ 的最大根\cite{katz2001new}; Bourgain、Katz 和 Tao 证明了 $\R^3$ 中 Minkowki 维数 $d\geq 5/2+\e_0$ ($\e_0>0$),\cite{bourgain2004sum} 这略微改进了 Wolff 的 $d\geq (n+2)/2$. 
+
+\subsection{尺度归纳和热流}
+
+尺度归纳 (induction on scale) 的基本想法是: 把尺度较小的的圆柱体 (比如说 $1\times\delta$ 圆柱体) 填充进尺度较大的圆柱体 (比如说 $1\times\sqrt{\delta}$ 圆柱体) 中, 用这种方式尝试从 Kakeya 极大算子 $f_\delta^*$ 的估计推出 $f_{\sqrt{\delta}}^*$ 的估计; 然后将这个步骤迭代任意多次, 可以把尺度为 $\delta$ 的情形逐步化归到尺度为 $1$. 利用尺度归纳的方法以及组合的技巧, Katz、Laba 和 Tao 证明了 $\R^3$ 中 Kakeya 集的 Minkowski 维数 $d\geq 2.5+10^{-10}$,\cite{katz2000improved} 略微改进了 Wolff 在 $\R^n$ 中 $d\geq (n+2)/2$ 的估计. 这个方法在维数不太大的情形也带来了微小的进展.\cite{laba2001improved}
+
+尺度归纳方法是让圆柱体的尺度按离散的方式变化, 一个改进这个方法的方向就是引入一个连续变换的尺度参数. Bennett、Carbery 和 Tao 提出了一个连续版本的尺度归纳法, 他们考虑了一些集中分布在 $1\times\sqrt{t}$ 圆柱上的 Gaussian 函数, 然后计算这些 Gaussian 函数的某些组合的 $L^p$ 表达式, 最终发现当 $t$ 变化的时候这些 Gaussian 函数的变化方式类似于某种形式的热流. 而热流具有某种单调性, 他们利用这种单调性证明了一个多线性版本的 Kakeya 猜想\cite{bennett2006multilinear}; 随后 Guth 证明了 Bennett--Carbery--Tao 多线性估计的端点情形\cite{guth2010endpoint}.
+
+\begin{theorem}[Bennett--Carbery--Tao]
+    若 $\mb{T}_j\ (1\leq j\leq k)$ 是轴向 $\delta$-分离的 $1\times\delta$ 圆柱体的族, ${k}/{(k-1)}\leq q\leq\infty$, 则存在与 $\delta$ 和 $\mb{T}_j$ 无关的常数 $C>0$, 使得
+    \begin{equation}
+        \label{eq: BCT 多线性估计-1}
+        \norm{\prod_{j=1}^k\left(\sum_{T_j\in\mb{T}_j}\chi_{T_j}\right)}_{L^{q/k}(\R^n)}\leq C\prod_{j=1}^k\left(\delta^{n/q}\#\mb{T}_j\right).
+    \end{equation} 
+\end{theorem}
+
+利用多线性估计进行尺度归纳可以得出 Kakeya 极大算子的估计, 但这种方法得出的估计并不会比 Wolff 的 $d\geq (n+2)/2$ 更好. 此外, 多线性估计 \eqref{eq: BCT 多线性估计-1} 无法再被改进, 这基本就宣告了利用多线性估计进行尺度归纳的方法无法解决 Kakeya 猜想.
+
+\subsection{代数几何和代数拓扑的方法}
+
+代数几何和代数拓扑的方法在 Kakeya 问题上体现出了巨大的威力. 在 2008 年 Dvir 利用代数几何的方法完美解决了有限域上的 Kakeya 猜想\cite{dvir2009size}, 但他的方法依赖于有限域上多项式的性质, 难以应用到欧氏空间中. Guth 尝试发展 Dvir 的多项式方法, 配合代数拓扑中的 ``三明治定理'' 证明了 Bennett--Carbery--Tao 多线性估计的端点情形.\cite{guth2010endpoint} 在 2013 年, Carbery 和 Valdimarsson 利用代数拓扑中的 Borsuk--Ulam 定理给出了另一个证明.\cite{carbery2013endpoint}
+
+不同于 Dvir 用到的有限域上的代数几何, Zahl 在 2021 年用实代数几何中的工具证明了另外一个版本的多线性 Kakeya 极大算子猜想, 由此配合尺度归纳 (induction on scale) 的技巧证明了 Kakeya 极大算子猜想在 $p=(2-\sqrt{2})n + c_n\ (c_n>0)$ 时成立. 这也是迄今为止 Kakeya 极大算子猜想在大多数维数下的最佳结果.\cite{zahl2021new} 由此我们可以看出代数几何的方法所具有的巨大潜力.
+
+\section{Kakeya 问题的若干表述方式}
+
+\subsection{Kakeya 极大算子和 Kakeya 集维数的关系}
+\label{subsec: 极大算子 vs Kakeya 集}
+
+下面我们证明, Kakeya 极大算子的估计可以导出 Kakeya 集维数的估计.
+
+\begin{proposition}
+    \label{prop: maximal func and kakeya dim}
+    若存在 $p, q\in (1, \infty)$ 和 $\alpha\geq 0$ 使得
+    \begin{equation}
+        \label{eq: Kakeya 算子的估计}
+        \norm{f^*_\delta}_q\ls_\e\delta^{-\alpha-\e}\norm{f}_p,\quad\forall\e>0,
+    \end{equation}
+    那么 $\R^n$ 中 Kakeya 集的 Hausdorff 维数至少是 $n-p\alpha$.
+\end{proposition}
+
+\begin{proof}
+    设 $K\subset\R^n$ 是 Kakeya 集, 那么我们只需证明对任意 $d<n-p\alpha$ 都有
+    \[
+        K\subset\bigcup_{j=1}^\infty B(x_j, r_j),\ r_j\leq 1\implies\sum_j r_j^d\gs_d 1.
+    \]
+
+    取定 Kakeya 集 $K$ 的开球覆盖 $\set{B(x_j, r_j)}_{j=1}^\infty$ s.t. $r_j\leq 1$. 下面我们估计 $\sum_j r_j^d$ 的下界. 为此, 我们把 $\set{r_j}$ 进行二进制分割, 然后分别求和. 令
+    \[
+        J_l := \set{j: 2^{-l} < r_j\leq 2^{-(l-1)}},
+    \]
+    于是
+    \[
+        \sum_j r_j^d = \sum_l\sum_{j\in J_l}r_j^d\sim\sum_l (\# J_l)2^{-ld}.
+    \]
+
+    对任意 $\omega\subset S^{n-1}$, 存在平行于 $\omega$ 的单位线段 $\gamma_\omega\subset K$. 对 $l\in\N$, 令
+    \begin{align*}
+        \quad
+        E_l &:= \bigcup_{j\in J_l} B(x_j, 3r_j),\quad
+        K_l := K\cap E_l,\\
+        S_l &:= \set{\omega\in S^{n-1}: \abs{\gamma_\omega\cap K_l}_\R\geq\frac{1}{10l^2}},
+    \end{align*}
+    其中 $\abs{\cdot}_\R$ 表示一维的 Lebesgue 测度. 注意到
+    \[
+        1=\abs{\gamma_\omega}_\R\leq\sum_l\abs{\gamma_\omega\cap K_l}_\R,\quad\sum_l\frac{1}{10l^2}<1,
+    \]
+    故由抽屉原理必然有 $S^{n-1}=\bigcup_l S_l$.
+
+    记 $T^{\delta}(\gamma_\omega)$ 为以 $\gamma_\omega$ 为轴、以 $\delta$ 为半径的圆柱体. 那么对任意 $\omega\in S_l$ 有
+    \[
+        \abs{T^{2^{-l}}(\gamma_\omega)\cap E_l}\gs\frac{1}{l^2}\abs{T^{2^{-l}}(\gamma_\omega)}.
+    \]
+    由此可知
+    \[
+        \norm{(\chi_{E_l})^*_{2^{-l}}}_q^q\geq\int_{S_l}\abs{(\chi_{E_l})^*_{2^{-l}}}^q\d\omega\gs\frac{1}{l^{2q}}
+        \abs{S_l}_{S^{n-1}}.
+    \]
+    另一方面, 由 \eqref{eq: Kakeya 算子的估计} 可知
+    \[
+        \norm{(\chi_{E_l})^*_{2^{-l}}}_q\ls_\e 2^{l\alpha+l\e}\norm{\chi_{E_l}}_p \ls 2^{l\alpha+l\e}\left(\sum_{j\in J_l}r_j^n\right)^{1/p}\sim 2^{l\alpha+l\e}\left(\# J_l\cdot 2^{-nl}\right)^{1/p}.
+    \]
+    
+    由 $S^{n-1}=\bigcup_l S_l$ 可知, 存在 $l$ 使得 $\abs{S_l}\gs 1$. 对此 $l$ 有
+    \[
+        \frac{1}{l^2}\ls\norm{(\chi_{E_l})^*_{2^{-l}}}_q\ls 2^{l\alpha+l\e}\left(\# J_l\cdot 2^{-nl}\right)^{1/p}.
+    \]
+    由此, 
+    \[
+        \sum_j r_j^{n-p\alpha-2p\e}\gs(\# J_l)2^{-l(n-p\alpha-2p\e)}\gs 2^{lp\e}l^{-2p}\gs_\e 1.
+    \]
+    这就完成了证明.
+\end{proof}
+
+\begin{remark}
+    从命题 \ref{prop: maximal func and kakeya dim} 可以看出, 如果希望从 Kakeya 极大算子的 $(p, q)$ 型估计导出 Kakeya 集维数的下界估计, 事实上 $q$ 是无关紧要的, 关键是使得 $p$ 尽量大, 并且使得常数尽量更优.
+\end{remark}
+
+\subsection{Kakeya 极大算子猜想的对偶版本}
+\label{subsec: 对偶极大算子猜想}
+
+首先介绍一个重要的引理, 它使得我们可以把 Kakeya 极大函数的 $L^p$ 范数 ``离散化''.
+
+\begin{lemma}
+    \label{lemma: 极大函数 L^p 范数的离散化} 
+    设 $\Omega\subset S^{n-1}$ 是极大的 $\delta$-分离集\footnote{度量空间中的某个集合称为是 $\delta$-分离的, 若其中任意两点的距离都 $\geq\delta$.}, $1\leq p<\infty$, 则
+    \begin{equation*}
+        \norm{f^*_\delta}_p \sim_p \left(\sum_{\omega\in\Omega}\delta^{n-1} f^*_\delta(\omega)^p\right)^{1/p}
+    \end{equation*}
+\end{lemma}
+
+\begin{proof}
+    首先注意到: 若 $\omega, \omega'\in S^{n-1}$ 满足 $\abs{\omega-\omega'}\ls\delta$, 则 $f^*_\delta(\omega)\sim f^*_\delta(\omega')$; 这是因为任一平行于 $\omega$ 的 $1\times\delta$ 柱体可以被 $\ls 1$ 个平行于 $\omega'$ 的 $1\times\delta$ 柱体覆盖.
+
+    由 $\Omega$ 的极大性可知 $S^{n-1}\subset\bigcup_{\omega\in\Omega} B(\omega, \delta)$, 故
+    \[
+        \norm{f^*_\delta}_p^p\leq\sum_{\omega\in\Omega}\int_{B(\omega, \delta)} f^*_\delta(\omega')^p\d\sigma(\omega') \sim \sum_{\omega\in\Omega}\delta^{n-1} f^*_\delta(\omega)^p.
+    \]
+    再由 $\set{B(\omega, \delta/2)}_{\omega\in\Omega}$ 两两无交, 可知
+    \[
+        \norm{f^*_\delta}_p^p\geq\sum_{\omega\in\Omega}\int_{B(\omega, \delta/2)} f^*_\delta(\omega')^p\d\sigma(\omega') \sim \sum_{\omega\in\Omega}\delta^{n-1} f^*_\delta(\omega)^p.
+    \]
+    这就完成了证明.
+\end{proof}
+
+若 $\Omega\subset S^{n-1}$ 是极大的 $\delta$-分离集, 则 $\#\Omega\sim\delta^{1-n}$. 由引理 \ref{lemma: 极大函数 L^p 范数的离散化} 以及幂平均不等式可知,
+\[
+    \norm{f^*_\delta}_p\gs\sum_{\omega\in\Omega}\delta^{n-1} f^*_\delta(\omega) \gs \sum_{\omega\in\Omega}\int_{T_\omega}\abs{f},
+\]
+其中 $T_\omega$ 是任意平行于 $\omega$ 的 $1\times\delta$ 圆柱体. 令 $f$ 取遍 $L^p$, 就得到
+\begin{equation}
+    \label{eq: 对偶版本弱于原版}
+    \norm{\sum_{\omega\in\Omega}\chi_{T_\omega}}_{p'}\ls\norm{K_\delta}_{p\to p},
+\end{equation}
+其中 $K_\delta: f\mapsto f^*_\delta$ 为 Kakeya 极大算子, $1/p' + 1/p = 1$. 由此自然导出如下的猜想.
+
+\begin{conjecture}[Kakeya 极大算子猜想, 对偶版本]
+    \label{conj: 极大算子猜想, 轴向极大分离的对偶版本}
+    设 $1\leq p\leq n$, $0<\delta\ll 1$. 若 $\T=\set{T}$ 是极大的轴向 $\delta$-分离 $1\times\delta$ 圆柱体的族, 则
+    \begin{equation*}
+        \norm{\sum_{T\in\T}\chi_T}_{p'}\ls_\e\delta^{-n/p+1-\e}\quad\forall\e>0
+    \end{equation*}
+    其中 $1/p+1/p'=1$.
+\end{conjecture}
+
+由式 \eqref{eq: 对偶版本弱于原版} 可知, Kakeya 极大算子猜想原本的版本 (猜想 \ref{conj: 极大算子猜想}) 蕴含其对偶版本. 下面我们证明, 对偶版本事实上和原来的版本是等价的.
+
+\begin{notation}
+    对固定的 $0<\delta\ll 1$ (即 Kakeya 问题中圆柱体的半径), 我们用 $A\lessapprox B$ 或 $B\gtrapprox A$ 表示 $A\ls_\e\delta^{-\e}B\ \forall\e>0$; 用 $A\approx B$ 表示 $A\lessapprox B$ 且 $A\gtrapprox B$.
+    
+    引进这个记号的原因在于, 证明 Kakeya 极大函数猜想的时我们总可以接受 $\delta^{-\e}$ 的损失, 也就是说 $A\lessapprox B$ 和 $A\ls B$ 基本上是一样的.
+\end{notation}
+
+\begin{proposition}[Kakeya 极大算子的对偶估计]
+    \label{prop: 对偶版本的等价性}
+    设 $1< p\leq n,\, 0<\delta\ll 1$. 那么对 $A\gtrapprox 1$, 下列说法等价:
+    \begin{enumerate}[nosep, label=(\alph*)]
+        \item $\norm{f^*_\delta}_p\lessapprox A\norm{f}_p$.
+        \item 若 $\Omega\subset S^{n-1}$ 为 $\delta$-分离集, 则对任意以 $\omega\in\Omega$ 为轴向的 $1\times\delta$ 圆柱体 $T_\omega$, 有
+        \[
+            \norm{\sum_{\omega\in\Omega} \chi_{T_\omega}}_{p'}\lessapprox A.
+        \]
+        \item 若 $\Omega\subset S^{n-1}$ 为 $\delta$-分离集, 则对任意以 $\omega\in\Omega$ 为轴向的 $1\times\delta$ 圆柱体 $T_\omega$, 有
+        \[
+            \norm{\sum_{\omega\in\Omega} \chi_{T_\omega}}_{p'}\lessapprox A\left(\sum_{\omega\in\Omega}\abs{T_\omega}\right)^{1/p'}.
+        \]
+    \end{enumerate}
+\end{proposition}
+
+\begin{proof}
+    由前面的讨论可知 (a) 蕴含 (b). 下面我们分别证明 (c) 蕴含 (a) 以及 (b) 蕴含 (c).
+
+    (I) 首先假设 (c) 成立, 下面证明 (a) 也成立. 
+    
+    由引理 \ref{lemma: 极大函数 L^p 范数的离散化} 以及 $\ell^p$ 和 $\ell^{p'}$ 的对偶性可知:
+    \[
+        \norm{f^*_\delta}_p \sim \left(\sum_{\omega\in\Omega}\delta^{n-1}f^*_\delta(\omega)^p\right)^{1/p} = \sum_{\omega\in\Omega}\delta^{n-1} y_\omega f^*_\delta(\omega),
+    \]
+    其中 $\set{y_\omega}$ 是某些实数, 满足 $\sum_{\omega\in\Omega}\abs{y_\omega}^{p'}=\delta^{1-n}$. 于是存在以 $\omega$ 为轴向的 $1\times\delta$ 柱体 $T_\omega$ 使得
+    \[
+        \norm{f^*_\delta}_p\sim\sum_{\omega\in\Omega}\delta^{n-1} y_\omega f^*_\delta(\omega)\ls\sum_{\omega\in\Omega}\int_{T_\omega}y_\omega\abs{f}\leq\norm{f}_p\norm{\sum_{\omega\in\Omega}y_\omega\chi_{T_\omega}}_{p'}.
+    \]
+    下面只需再证明 $\norm{\sum_{\omega\in\Omega}y_\omega\chi_{T_\omega}}_{p'}\lessapprox A$.
+
+    为了把 $\norm{\sum_{\omega\in\Omega}y_\omega\chi_{T_\omega}}_{p'}$ 中的 $\set{y_\omega}$ ``分离'' 出来, 我们采用标准的\emph{二进制分割}的技巧, 即把 $\set{y_\omega}$ 按二的幂次划分为不同的阶, 然后对各阶分别求和. 首先注意到
+    \[
+        \norm{\sum_{\omega\in\Omega:\, \abs{y_\omega}\leq\delta^{n-1}}y_\omega\chi_{T_\omega}}_{p'}\leq\sum_{\omega\in\Omega}\delta^{n-1}\abs{T_\omega}^{1/p'}\ls\delta^{(n-1)(1-1/p)}\ls 1\lessapprox A,
+    \]
+    也就是说我们只需再证明
+    \[
+        \norm{\sum_{\omega\in\Omega:\,\abs{y_\omega}>\delta^{n-1}}y_\omega\chi_{T_\omega}}_{p'}\lessapprox A.
+    \]
+    为此, 我们把 $\set{\omega: \abs{y_\omega}>\delta^{n-1}}$ 划分为 $O(\log 1/\delta)$ 个集合
+    \begin{align*}
+        \Omega_k := \set{\omega\in\Omega: 2^{k-1}\leq\abs{ y_\omega}< 2^{k}},
+    \end{align*}
+    那么,
+    \[
+        \delta^{1-n}=\sum_{\omega\in\Omega}y_\omega^{p'}\gs\sum_{k\geq 1} 2^{kp'}\#\Omega_k.
+    \]
+    利用 (c) 以及 H\"older 不等式可知
+    \begin{align*}
+        \norm{\sum_{\omega\in\Omega:\,\abs{y_\omega}>\delta^{n-1}}y_\omega\chi_{T_\omega}}_{p'}&\ls\sum_k 2^{k}\norm{\sum_{\omega\in\Omega_k}\chi_{T_\omega}}_{p'}\\
+        &\lessapprox A\sum_k 2^{k}\left(\#\Omega_k\delta^{n-1}\right)^{1/p'}\\
+        &\leq A\delta^{(n-1)/p'}\left(\sum_k 2^{kp'}\#\Omega_k\right)^{1/p'}\left(\sum_k 1\right)^{1/p}\\
+        &\ls A\delta^{(n-1)/p'}\delta^{(1-n)/p'}(\log 1/\delta)^{1/p}\\
+        &\lessapprox A.
+    \end{align*}
+    这样就证得 (a) 成立.
+
+    (II) 下面假设 (b) 成立, 下面证明 (c) 也成立.
+
+    注意到 $\Omega$ 为极大 $\delta$-分离集时, (b) 和 (c) 是等价的. 这个观察引出了接下来证明的思路. 令
+    \[
+        B(N) := \sup_{\Omega, T_\omega:\,N/2<\#\Omega\leq N}\norm{\sum_{\omega\in\Omega}\chi_{T_\omega}}_{p'},
+    \]
+    我们只需证明 $B(N)\lessapprox A(N\delta^{n-1})^{1/p'}$.
+    为此, 我们希望选取正交变换 $U$ 使得 $\Omega\cup U(\Omega)$ 仍然是 $\delta$-分离的, 由此就可以建立 $B(N)$ 和 $B(2N)$ 之间的递推关系. 然后再取 $k$ 充分大使得 $2^kN\sim\delta^{1-n}$, 利用 (b) 得出 $B(2^kN)$ 的估计 (这个估计非常精确), 然后再用递推关系就可以反推出 $B(N)$ 的估计.
+
+    但是一般而言, 选取上述的 $U$ 并不容易, 特别是当 $\#\Omega$ 比较大的时候. 令 $U$ 从正交群 $O(n)$ 中随机选取 (给正交群配上 Haar 测度使其成为概率空间), 则几乎必然 $U(\Omega)\cap\Omega=\emptyset$. 尽管 $U(\Omega)\cup\Omega$ 并不一定仍然是 $\delta$-分离的, 我们希望从中去掉一小部分元素之后使其 $\delta$-分离. 考察非 $\delta$-分离的点的对数
+    \[
+        A(\Omega, U(\Omega)) := \#\set{(\omega,\omega')\in\Omega\times U(\Omega): \abs{\omega-\omega'}\leq\delta},
+    \]
+    我们希望选取 $U$ 使得 $A(\Omega, U(\Omega))$ 比较小. 注意到
+    \[
+        A(\Omega, U(\Omega)) = \sum_{\omega,\omega'\in\Omega}\chi_{B(0, \delta)}(\omega-U(\omega')),
+    \]
+    于是 $A(\Omega, U(\Omega))$ 的期望
+    \begin{align*}
+        \int_{O(n)}A(\Omega, U(\Omega))\d U = \sum_{\omega,\omega'\in\Omega}f(\omega,\omega'),\quad
+        f(\omega,\omega') := \int_{O(n)}\chi_{B(0,\delta)}(\omega, U(\omega'))\d U.
+    \end{align*}
+    由 Haar 测度的对称性可知 $f(\omega,\omega')$ 和 $\omega'$ 无关, 从而
+    \[
+        f(\omega, \omega') = \frac{1}{\abs{S^{n-1}}}\int_{O(n)}\int_{S^{n-1}}\chi_{B(0,\delta)}(\omega, U(\omega'))\d\omega'\d U\sim\int_{O(n)}\delta^{n-1}dU = \delta^{n-1},
+    \]
+    于是
+    \[
+        \int_{O(n)}A(\Omega, U(\Omega))\d U \sim\delta^{n-1}\#(\Omega\times\Omega)\leq\delta^{n-1}N^2.
+    \]
+    由抽屉原理就可以选取 $U\in O(n)$ 使得 $A(\Omega, U(\Omega))\ls\delta^{n-1}N^2$. 
+
+    对任意 $\e>0$, 可以选取 $\delta$-分离集 $\Omega\subset S^{n-1}$ 以及 $1\times\delta$ 圆柱体 $\set{T_\omega}$ 使得
+    \[
+        \norm{\sum_{\omega\in\Omega}\chi_{T_\omega}}_{p'}\geq B(N)-\e.
+    \]
+    按上述方式, 选取 $U\in O(n)$ 使得 $A(\Omega, U(\Omega))\ls\delta^{n-1}N^2$. 首先注意到
+    \[
+        \norm{\sum_{\omega\in\Omega\cup U(\Omega)}\chi_{T_\omega}}_{p'}\geq\left(\norm{\sum_{\omega\in\Omega}\chi_{T_\omega}}_{p'}^{p'} + \norm{\sum_{\omega\in U(\Omega)}\chi_{T_\omega}}_{p'}^{p'}\right)^{1/p'}\geq 2^{1/p'}(B(N)-\e).
+    \]
+    另一方面, 由 $A(\Omega, U(\Omega))\ls\delta^{n-1}N^2$ 可知, 可以在 $\Omega\cup U(\Omega)$ 挖去一个元素个数 $\ls\delta^{n-1}N^2$ 的集合 $S$ 之后就是 $\delta$-分离集; 并且我们可以把 $S$ 划分为 $\leq c$ 个元素个数为 $\leq\delta^{n-1}N^2$ 的 $\delta$ 分离集 ($c$ 只和 $n$ 有关). 于是
+    \[
+        \norm{\sum_{\omega\in\Omega\cup U(\Omega)}\chi_{T_\omega}}_{p'}\leq\norm{\sum_{\omega\in(\Omega\cup U(\Omega))\sm S}\chi_{T_\omega}}_{p'} + \norm{\sum_{\omega\in S}\chi_{T_\omega}}_{p'}\leq B(2N) + cB(\delta^{n-1}N^2),
+    \]
+    令 $\e\to 0$, 就得到递推关系
+    \begin{equation}
+        \label{eq: random rotation, iterate}
+        B(N)\leq 2^{-1/p'}B(2N) + cB(\delta^{n-1}N^2),
+    \end{equation}
+    其中 $c$ 只和 $p$ 与 $n$ 有关.
+
+    取 $k$ 使得 $2^kN\sim\delta^{1-n}$. 要证 $B(N)\lessapprox A(N\delta^{n-1})^{1/p'}$, 只需证 $b_k := 2^{k/p'}B(2^{-k}\delta^{1-n})$ 满足 $b_k\lessapprox A$. 由 \eqref{eq: random rotation, iterate} 可得到 $\set{b_k}$ 满足的递推式
+    \[
+        b_k\leq b_{k-1} + c2^{-k/p'}b_{2k}.
+    \]
+    注意到当 $N$ 充分大 (大到 $S^{n-1}$ 中不存在个数 $\sim N$ 的 $\delta$-分离集) 时 $B(N)=0$; 故存在 $C>0$ 使得当 $k>C\log(1/\delta)$ 时 $b_k=0$. 然后考虑
+    \[
+        a_k = b_k(1+M2^{-k/p'}),
+    \]
+    则当 $M>0$ 充分大时可以验证:
+    \begin{equation}
+        \label{eq: Dual maximal conjecture, iterate argument}
+        a_k < a_{k-1} + C2^{-k/p'}\left((a_{2k}-a_k)+(a_{k-1}-a_k)\right).
+    \end{equation}
+    设 $a_{k_0}$ 为有限个非零的 $\set{a_k}$ 中的最大值, 若 $k_0\geq 1$ 则在 \eqref{eq: Dual maximal conjecture, iterate argument} 中取 $k=k_0$ 即可导出矛盾; 故只能 $k_0=0$. 这就说明了 $a_k\leq a_0 = b_0\lessapprox A$. 再由 $a_k\geq b_k$ 即可完成证明.
+\end{proof}
+
+\begin{remark}
+    从上述证明过程中可以看出, 命题 \ref{prop: 对偶版本的等价性} 中 (a) 推出 (b) 和 (b) 推出 (c) 都不必在不等式的常数中丢失 $\delta^{-\e}$. 也就是说, 我们有
+    \[
+        \norm{f^*_\delta}_p\ls A\norm{f}_p\implies\norm{\sum_{\omega\in\Omega}\chi_{T_\omega}}_{p'}\ls A
+    \]
+    以及
+    \[
+        \norm{\sum_{\omega\in\Omega}\chi_{T_\omega}}_{p}\ls A\implies\norm{\sum_{\omega\in\Omega}\chi_{T_\omega}}_{p}\ls A\left(\sum_{\omega\in\Omega}\abs{T_\omega}\right)^{1/p},
+    \]
+    其中 $\Omega\subset S^{n-1}$ 为任意 $\delta$-分离集, $T_\omega$ 是任意平行于 $\omega\in\Omega$ 的 $1\times\delta$ 圆柱体.
+\end{remark}
+
+由命题 \ref{prop: 对偶版本的等价性}, 即可说明 Kakeya 极大算子的对偶版本 (猜想 \ref{conj: 极大算子猜想, 对偶版本} 和猜想 \ref{conj: 极大算子猜想, 轴向极大分离的对偶版本}) 和原本的版本 (猜想 \ref{conj: 极大算子猜想}) 是等价的. 但是对偶版本中隐藏了 Kakeya 极大算子, 只需要用圆柱体进行表述, 具有更明确的几何意义.
+
+\subsection{Kakeya 极大算子猜想的染色版本}
+
+下面我们介绍 Kakeya 极大算子猜想的染色版本. 这个版本完全用集合以及测度来描述, 不涉及函数的积分, 更有利于组合几何技巧的应用. 首先介绍染色的概念.
+
+\begin{definition}
+    设 $\T$ 是一族 $1\times\delta$ 圆柱体, $0<\lambda\leq 1$. 称 $Y$ 为 $\T$ 的\textbf{$\lambda$-染色} ($\lambda$-shading), 若 $Y$ 是一个映射 $Y: T\in\T\mapsto Y(T)$ 使得 $Y(T)\subset T$, 并且 $\abs{Y(T)}=\lambda\abs{T}$.
+\end{definition}
+
+Kakeya 极大算子猜想也可以用染色来刻画:
+
+\begin{proposition}[染色估计]
+    \label{prop: Kakeya 极大算子猜想的染色版本}
+    设 $0<\delta\ll 1$, $1\leq p\leq n$. 那么下列说法等价:
+    \begin{enumerate}[label=(\alph*), nosep]
+        \item  Kakeya 极大算子猜想在 $p$ 时成立, i.e. $\norm{f^*_\delta}_p\lessapprox\delta^{-n/p+1}\norm{f}_p$.
+        \item 对任意轴向 $\delta$-分离的 $1\times\delta$ 圆柱体族 $\T$ 及其 $\lambda$-染色 $Y$, 都有
+        \begin{equation}
+            \label{eq: shading conj}
+            \abs{\bigcup_{T\in\T} Y(T)}\gtrapprox\lambda^p\delta^{n-p}\left(\delta^{n-1}\#\T\right).
+        \end{equation}
+        % \item 对任意极大的轴向 $\delta$-分离的 $1\times\delta$ 圆柱体族 $\T$ 及其 $\lambda$-染色 $Y$ ($\delta\ls\lambda\leq 1$), 都有
+        % \begin{equation*}
+        %     \abs{\bigcup_{T\in\T} Y(T)}\gtrapprox\lambda^p\delta^{n-p}.
+        % \end{equation*}
+    \end{enumerate}
+\end{proposition}
+
+在证明命题 \ref{prop: Kakeya 极大算子猜想的染色版本} 之前, 我们需要一个引理, 它说明 Kakeya 极大算子的弱型估计和强型估计只差 $\delta^{-\e}$ 的常数.
+
+\begin{lemma}[弱型估计]
+    \label{lemma: Kakeya weak-type esti.}
+    设 $p, q\in [1, \infty]$. 若 Kakeya 极大算子满足弱 $(p, q)$ 型估计
+    \[
+        \lambda\abs{\set{\omega\in S^{n-1}: (\chi_E)^*_\delta(\omega)>\lambda}}^{1/q}\ls A\abs{E}^{1/p}\quad\forall \lambda>0\ \forall E\subset\R^n;
+    \]
+    则 $\norm{f^*_\delta}_q\lessapprox A\norm{f}_p$.
+\end{lemma}
+
+\begin{proof}
+    主要想法是对 Kakeya 极大算子进行插值, 以下大致描述插值的步骤, 而略去具体的计算.
+
+    将弱 $(p, q)$ 型估计和平凡的 $(1, \infty)$ 型估计进行插值, 可得 Kakeya 极大算子的强 $(p_\theta, q_\theta)$ 型估计, 其中
+    \[
+        \frac{1}{p_\theta} = \frac{1-\theta}{p} + \frac{\theta}{1},\quad \frac{1}{q_\theta} = \frac{1-\theta}{q} + \frac{\theta}{\infty}\quad (0<\theta\leq 1).
+    \]
+    然后再将 $(p_\theta, q_\theta)$ 型估计和平凡的 $(\infty, \infty)$ 型估计进行插值, 可以得到 $(p, q_\theta')$ 型估计. 经计算可知 $q_\theta'>q$, 而 $S^{n-1}$ 测度有限, 从而可以导出一个依赖于 $\theta$ 的 $(p, q)$ 型估计. 然后令 $\theta\to 0$, 即可得出 Kakeya 极大算子的 $(p, q)$ 型范数 $\lessapprox A$.
+\end{proof}
+
+然后我们就可以证明我们原本的命题.
+
+\begin{proof}[\pftitle 命题 \ref{prop: Kakeya 极大算子猜想的染色版本} 的证明]
+    假设 (a) 成立. 要证明 (b) 成立, 只需将 (a) 中的 $f$ 取为集合 $\bigcup_{T\in\T} Y(T)$ 的特征函数, 然后利用引理 \ref{lemma: 极大函数 L^p 范数的离散化}. 这里不再赘述细节.
+
+    假设 (b) 成立, 下证 (a) 成立. 由引理 \ref{lemma: Kakeya weak-type esti.}, 我们只需证明弱 $(p, p)$ 型估计; 即对 $E\subset\R^n$, 记 $\Omega_\lambda=\set{\omega\in S^{n-1}: (\chi_E)^*_\delta(\omega)>\lambda}$, 我们需要证明
+    \begin{equation}
+        \label{eq: shading-to-prove}
+        \abs{E}\gtrapprox\delta^p\lambda^{n-p}\abs{\Omega_\lambda}.
+    \end{equation}
+
+    % 首先考虑 $\lambda\gs\delta$ 的情形. 
+    取 $\Omega_\lambda$ 的极大 $\delta$-分离子集 $\set{\omega_k}_{k=1}^M$, 则 $\abs{\Omega_\lambda}\sim M\delta^{n-1}$. 由 $\Omega_\lambda$ 的定义可知, 存在平行于 $\omega_k$ 的 $1\times\delta$ 圆柱体 $T_k$ 使得 $\abs{T_k\cap E}>\lambda\abs{T_k}$. 由此我们可以定义 $\set{T_k}$ 的 $\lambda$-染色 $Y$ 使得 $Y(T_k)\subset T_k\cap E$. 于是由 (b) 可知
+    \[
+        \abs{E}\geq\abs{\bigcup_{T\in\T}Y(T)}\gtrapprox\delta^p\lambda^{n-p}(\delta^{n-1}M),
+    \]
+    这就证得 \eqref{eq: shading-to-prove}.
+\end{proof}
+
+\begin{remark}
+    (1) 这里不加证明地指出染色估计和 Kakeya 集维数之间的关系:
+    \begin{itemize}[nosep]
+        \item 若式 \eqref{eq: shading conj} 在 $\lambda=1$ 时成立, 即\footnote{$1$-染色在几乎处处的意义下只有 $Y(T)=T$.}
+        \[
+            \abs{\bigcup_{T\in\T} T}\gtrapprox\delta^{n-p}(\delta^{n-1}\#\T),
+        \]
+        则 $\R^n$ 中 Kakeya 集的 Minkowski 维数不小于 $p$.
+        \item 若式 \eqref{eq: shading conj} 在 $\lambda\approx 1$ 时成立,  则 $\R^n$ 中 Kakeya 集的 Hausdorff 维数不小于 $p$.
+    \end{itemize}
+
+    (2) 事实上在证明式 \eqref{eq: shading conj} 时, 只需证明 $\T$ 为极大的 $\delta$-分离 $1\times\delta$ 圆柱体族时的情形; 这一点可以用类似命题 \ref{prop: 对偶版本的等价性} 的证明中的 ``随机旋转'' 的方法来说明. 我们接下来并不会用到这一点, 限于篇幅这里略去证明.
+\end{remark}
+
+\section{Kakeya 问题的组合几何方法}
+
+在 Kakeya 问题的研究进程中, 组合几何的方法在上世纪 70--90 年代占据了主流地位, 这些方法也取得了一些重要的成果. 本节中我们将选取一些由组合几何方法导出的经典结果, 详细介绍和分析其中用到的技术.
+
+\subsection{Kakeya 极大算子的 \texorpdfstring{$L^2$}{L\^{}2} 估计}
+
+本小节中我们将证明二维情形的 Kakeya 极大算子猜想. 下面介绍的方法来自 C\'ordoba\cite{cordoba1977kakeya}, 他的方法依赖于 ``两直线交于一点'' 这一最基本的组合几何事实.
+
+\begin{theorem}[$L^2$ 估计]
+    \label{thm: 2-dim kakeya}
+    设 $0<\delta\ll 1$. 若 $\T=\set{T}$ 是 $\R^2$ 中一族轴向极大 $\delta$-分离的 $1\times\delta$ 矩形, 则
+    \[
+        \norm{\sum_T \chi_T}_2\ls (\log 1/\delta)^{1/2}.
+    \]
+    特别地, Kakeya 极大算子猜想在 $p=2$ 的情形成立.
+\end{theorem}
+
+\begin{proof}
+    对 $T, T'\in\T$, 记 $\angle(T, T')$ 为 $T$ 和 $T'$ 之间轴向的夹角. 注意到
+    \[
+        \norm{\sum_T \chi_T}_2^2 = \int \sum_{T, T'}\chi_T\chi_{T'} = \sum_{T, T'}\abs{T\cap T'}\ls\sum_{T, T':\,T\neq T'}\frac{\delta^n}{\angle(T, T')} + O(1),
+    \]
+    其中 $O(1)$ 来自 $T=T'$ 的项的求和.
+
+    注意到对固定的 $T$, 满足 $\angle(T, T')\sim j\delta$ 的 $T'$ 有 $O(1)$ 个, 这里 $0 < j\ls 1/\delta$ 为整数, 于是
+    \[
+        \sum_{T, T':\,T\neq T'}\frac{\delta^n}{\angle(T, T')}\ls\sum_T\sum_{0<j\ls 1/\delta}\frac{\delta^n}{j\delta}\ls\#\T\log(1/\delta)\delta^{n-1},
+    \]
+    再由 $\#\T\sim\delta^{1-n}$ 即可完成证明.
+\end{proof}
+
+证明的关键是注意到如下几何上的事实:发挥同等效力的是
+\begin{equation}
+    \label{eq: Cordoba Geo Esti.}
+    \abs{T\cap T'}\ls\frac{\delta^n}{\angle(T, T')}.
+\end{equation}
+式 \eqref{eq: Cordoba Geo Esti.} 可以看成是 ``两直线交于一点'' 的类比. 为更清楚地看出这一点, 以下给出定理 \ref{thm: 2-dim kakeya} 在有限域中的类比.
+
+\begin{proposition}[有限域情形的 $L^2$ 估计]
+    \label{prop: 2-dim finite field}
+    设 $\F$ 是 $q$ 元有限域. 若 $E\subset\F^2$ 中包含了 $m$ 条不同方向的直线, 则 $\# E\gs mq$.
+\end{proposition}
+
+\begin{proof}
+    记这 $m$ 条直线为 $\set{l_i}$, 则由 Cauchy-Schwarz 不等式可知
+    \begin{align*}
+        mq &= \sum_i\#(E\cap l_i)\\
+        &\leq (\# E)^{1/2}\left(\sum_{i, j}\#(l_i\cap l_j)\right)^{1/2}\\
+        &\leq (\# E)^{1/2}(mq + m(m-1))^{1/2}\quad\text{(当 $i\neq j$ 时 $\#(l_i\cap l_j)\leq 1$)}\\
+        &\ls (\# E)^{1/2}(mq)^{1/2}\quad \text{(由 $m\ls q$)}.
+    \end{align*}
+    因此 $\# E\gs mq$.
+\end{proof}
+
+\subsection{Bourgain 的 bush 论证}
+
+Bourgain 在 1991 年证明了 Kakeya 猜想在 $p=(n+1)/2$ 的情形\cite{bourga1991besicovitch}, 本小节将介绍其证明的主要想法. 为清晰的反映证明所用到的组合本质, 我们首先介绍如何用 Bourgain 的方法证明有限域上对应的问题.
+
+\begin{proposition}
+    设 $\F$ 是 $q$ 元有限域 ($q\gg 1$). 若 $K\subset\F^n$ 为 Kakeya 集, 则 $\# K\gs q^{(n+1)/2}$.
+\end{proposition}
+
+\begin{proof}
+    设 $\mc{L}=\set{l}$ 是包含于 $K$ 的所有不同方向的直线, 则 $\# L\sim q^{n-1}$. 对 $x\in\F^n$, 记 $m(x) = \#\set{i: x\in l_i}$ 为 $x$ 的\emph{重数}. 注意到
+    \[
+        \sum_{x\in K} m(x) = \sum_{l\in\mc{L}}\#(K\cap l) \sim q\cdot q^{n-1},
+    \]
+    于是由抽屉原理可找到 $x_0\in K$ 使得
+    \[
+        m(x_0)\gs\frac{q^n}{\# K}.
+    \]
+
+    另一方面, 设 $\set{l_i: 1\leq i\leq m(x_0)}$ 是 $\mc{L}$ 中所有通过 $x_0$ 的直线, 则 $\set{l_i\sm\set{x_0}}$ 两两无交, 从而对 $i$ 求和可以得到:
+    \[
+        \# K\geq \sum_{i=1}^{m(x_0)}\#(l_i\sm\set{x_0}) = m(x_0)(q-1)\gs\frac{q^{n}}{\# K}\cdot q,
+    \]
+    由此就得到 $\# K\gs q^{(n+1)/2}$.
+\end{proof}
+
+上述证明的依赖于 ``两点确定一条直线'' 这一事实. 由此, 如果 $\mc{L}$ 是通过 $x_0$ 的一束直线, 那么它必然在 $x_0$ 以外的点重数很低. 把圆柱体类比为直线, 就可以在欧氏空间中用上类似的想法. 这个想法最先由 Bourgain 提出\cite{bourga1991besicovitch}. 下面我们叙述如何把这个组合的想法用在欧氏空间中的 Kakeya 问题.
+
+\begin{theorem}[Bourgain]
+    \label{thm: Bourgain}
+    若 $p=(n+1)/2$, 则 $\norm{f^*_\delta}_p\lessapprox\delta^{-n/p+1}\norm{f}_p$.
+\end{theorem}
+
+\begin{proof}
+    设 $\T$ 是 $\R^n$ 中一族轴向 $\delta$-分离的 $1\times\delta$ 圆柱体, $Y$ 是其 $\lambda$-染色. 我们只需证明
+    \begin{equation}
+        \label{eq: bush-to-prove}
+        \abs{\bigcup_{T\in\T}Y(T)}\gtrapprox\lambda^{(n+1)/2}\delta^{(n-1)/2}(\delta^{n-1}\#\T).
+    \end{equation}
+    我们把圆柱体类比为 ``直线'', 然后尝试套用有限域中的方法.
+
+    首先注意到, 当 $\lambda\ls\delta$ 时 \eqref{eq: bush-to-prove} 是平凡的, 因为
+    \[
+        \abs{\bigcup_{T\in\T}Y(T)}\geq\abs{Y(T)}\sim\lambda\delta^{n-1}\gs\lambda^{(n+1)/2}\delta^{(n-1)/2}(\delta^{n-1}\#\T),
+    \]
+    最后一步中注意 $\delta^{n-1}\#\T\ls 1$.
+
+    下面我们证明, 存在常数 $C$ 使得 \eqref{eq: bush-to-prove} 在 $C\delta\leq\lambda\leq 1$ 时成立. 与有限域的情形类似, 首先我们尝试找一个点, 使得 $\T$ 中的圆柱体在该点处重数较大. 同样用抽屉原理: 记 $Y=\bigcup_{T\in\T} Y(T)$, 则
+    \[
+        \int_Y\sum_{T\in\T}\chi_T(x)\dx = \sum_{T\in\T}\abs{Y\cap T} \sim\lambda\delta^{n-1}\#\T,
+    \]
+    从而可找到 $x\in Y$ 使得
+    \[
+        \sum_{T\in\T}\chi_T(x)\gs\frac{\lambda\delta^{n-1}\#\T}{\abs{Y}}.
+    \]
+    记 $\T_x = \set{T\in\T: x\in T}$ 为所有包含 $x$ 的圆柱体, 这样我们就构造出了一束重数较高的圆柱体.
+
+    与有限域的想法相同, $\T_x$ 在远离 $x$ 的地方重数较低, 但这还需要圆柱体之间的夹角不能太小. 取 $\T_x$ 中极大的轴向 $(\delta/\lambda)$-分离的子集 $\T_x'$. 由 $\lambda\geq C\delta$, 当 $C$ 足够大时可使得集族 $\set{T\sm B(x, \lambda/2): T\in\T_x'}$ 中的元素两两无交. 注意到
+    \[
+        \abs{T\cap B(x, \lambda/2)}\leq\frac{\lambda}{2}\abs{T},
+    \]
+    于是由 $\abs{Y\cap T}=\lambda\abs{T}$ 可知
+    \begin{align*}
+        \abs{Y}\geq\sum_{T\in\T_x'}\abs{Y\cap (T\sm B(x, \lambda/2))}
+        \geq\sum_{T\in\T_x'}\frac{\lambda}{2}\abs{T}
+        \sim\lambda\delta^{n-1}\#\T_x';
+    \end{align*}
+    而
+    \[
+        \#\T_x'\sim\#\T_x\lambda^{n-1} = \lambda^{n-1}\sum_{x\in\T}\chi_T(x)\gs \lambda^{n-1}\frac{\lambda\delta^{n-1}\#\T}{\abs{Y}},
+    \]
+    结合以上两式即可完成证明.
+\end{proof}
+
+\subsection{Wolff 的 hairbrush 论证}
+
+Wolff 在 1995 年证明了 Kakeya 极大函数猜想在 $p=(n+2)/2$ 时的情形\cite{wolff1995improved}. 
+
+\begin{theorem}[Wolff]
+    \label{thm: Wolff}
+    若 $p=(n+2)/2$, 则 $\norm{f^*_\delta}_p\lessapprox\delta^{-n/p+1}\norm{f}_p$.
+\end{theorem}
+
+下面我们介绍他的证明思路. 这里我们叙述的证明基于 Tao 在 1997 年提出的 ``双线性约简'' 的技巧\cite{Tao-1998-BilinearApproachRestriction}, 它使得 Wolff 的证明可以被更简洁地叙述.
+
+\subsubsection{有限域的类比}
+
+我们仍然首先在有限域的情形来说明 Wolff 证明中所用到的组合技巧.
+
+\begin{proposition}
+    \label{prop: finite field hairbrush}
+    设 $\F$ 是 $q$ 元有限域 ($q\gg 1$). 若 $K\subset\F^n$ 为 Kakeya 集, 则 $\# K\gs q^{(n+2)/2}$.
+\end{proposition}
+
+\begin{proof}
+    设 $\mc{L}=\set{l}$ 是包含于 Kakeya 集 $K$ 的所有不同方向的直线. 对 $x\in K$, 记 $\mc{L}_x=\set{l\in\mc{L}: x\in l}$ 为 $\mc{L}$ 中所有经过 $x$ 的直线的集合.
+    
+    取 $\mu\gg 1$ 待定. 我们称直线 $l\in\mc{L}$ 是\emph{高重数的}, 若 $l$ 上至少有 $q/2$ 个点 $x$ 满足 $\#\mc{L}_x>\mu$. 我们分别考虑如下两类情况.
+
+    情况 1: 假如 $\mc{L}$ 中不存在高重数的直线. 考虑集合 $K' = \set{x\in K: \#\mc{L}_x\leq\mu}$, 对任意 $l\in\mc{L}$ 都有 $\#(l\cap K)>q/2$. 于是
+    \[
+        \mu\# K'\geq \sum_{x\in K'}\#\mc{L}_x = \sum_{l\in\mc{L}}\#(l\cap K')\geq (q/2)\#\mc{L}\sim q^n,
+    \]
+    从而 $\#K\geq \# K'\gs \mu^{-1}q^n$.
+
+    情况 2: $\mc{L}$ 中存在高重数的直线 $l_0$. 假设 $x_1, \cdots, x_k\in l_0\ (k\geq q/2)$ 满足 $\#\mc{L}_{x_i}>\mu$. 接下来我们希望选取一些平面来应用命题 \ref{prop: 2-dim finite field}. 记 $ \mc{H}=\bigcup_{i=1}^k(\mc{L}_{x_i}\sm\set{l_0})$ 为所有和 $l_0$ 相交的直线的集合; 再记 $\Pi$ 为所有由 $l_0$ 和 $\mc{H}$ 中某条直线所确定的平面的集合.
+    注意到集族 $\set{\pi\sm{l_0}:\pi\in\Pi}$ 中的元素两两无交, 于是
+    \[
+        \# K\geq \sum_{\pi\in\Pi}\#(K\cap (\pi\sm l_0)).
+    \]
+    记 $m(\pi)$ 为平面 $\pi$ 中包含 $\mc{H}$ 中直线的条数, 则由二维的结论 (命题 \ref{prop: 2-dim finite field}) 可知
+    \[
+        \#(K\cap (\pi\sm l_0))\gs m(\pi)q.
+    \]
+    于是
+    \begin{equation}
+        \label{eq: discrete hairbrush estimate}
+        \# K \gs\sum_{\pi\in\Pi} m(\pi)q = q\#\mc{H}\geq qk\mu\gs q^2\mu
+    \end{equation}
+    取 $\mu\sim q^{(n-2)/2}$ 即可使情况 1 和 2 都满足 $\# K\gs q^{(n+2)/2}$.
+\end{proof}
+
+上面证明中的情况 2 中, 我们本质上是考察了与直线 $l_0$ 相交的一族直线 $\mc{H}$, 这个结构看起来像一柄刷子 (hairbrush). 我们本质上是利用二维的估计, 来说明刷子上的 ``刷毛'' $\mc{H}$ 在远离 ``刷柄'' $l_0$ 的地方重合度不会太高. 式 \eqref{eq: discrete hairbrush estimate} 说明, 当刷毛越多 (即 $\#\mc{H}$ 越大), 我们得出的估计就越好. 所以, 证明的关键在于构造一把有很多毛的刷子, 即找到一条重数很高的直线 $l_0$ 作为刷柄.
+
+\subsubsection{双线性约简}
+
+下面我们考虑如何把上述的组合技巧应用到 $\R^n$ 中. 按照前面的讨论, 我们希望利用某些方法构造出一个重数很高的圆柱体 $T_0$ 以及一个对应的 ``刷子'' , 把刷柄的一个邻域挖去之后刷子剩余的部分重叠部分比较小, 由此导出染色面积的估计. Bourgain 定理 (定理 \ref{thm: Bourgain}) 的证明告诉我们, 要想使得两个圆柱体的两端重叠程度比较低, 那么它们的夹角应该尽量大. 以上这些就启发了\textbf{双线性约简} (bilinear reduction) 的技巧, 它使得我们可以把问题简化到圆柱体的夹角不太小的情况.
+
+% \begin{figure}
+%     \centering
+%     \includegraphics[scale=0.25]{hairbrush.jpg}
+%     \caption{Wolff 的 ``刷子''}
+%     \label{fig: hairbrush}
+% \end{figure}
+
+我们从 Kakeya 极大算子的对偶版本出发. 设 $\T$ 是一族轴向 $\delta$-分离的 $1\times\delta$ 圆柱体, $p\geq 2$. 我们希望证明
+\begin{equation}
+    \label{eq: hairbrush to prove 1}
+    \norm{\sum_{T\in\T}\chi_T}_{p'}\lessapprox\delta^{-n/p+1}.
+\end{equation}
+由命题 \ref{conj: 极大算子猜想, 对偶版本}, 我们可以不妨假设 $T$ 的轴向都落在 $B(e_n, 1/10)$ 中, 其中 $e_n$ 是 $\R^n$ 的第 $n$ 个标准基向量; 因为我们只需要把球冠 $B(e_n, 1/10)$ 旋转若干次, 进而覆盖整个球面. 
+
+记 $q=p'$. 把式 \eqref{eq: hairbrush to prove 1} 改写为
+\begin{equation}
+    \label{eq: bilinear 1}
+    \norm{\sum_{T, T'\in\T}\chi_T\chi_{T'}}_{q/2}^{q/2}\lessapprox\delta^{n-q(n-1)}.
+\end{equation}
+由于 $q/2\leq 1$, 从而有伪三角不等式
+\[
+    \norm{f+g}_{q/2}^{q/2}\leq\norm{f}_{q/2}^{q/2}+\norm{g}_{q/2}^{q/2}.
+\]
+对 \eqref{eq: bilinear 1} 的左边按圆柱体的夹角 $\angle(T, T')=\abs{\omega_T-\omega_{T'}}$ 进行二进制分割, 可得
+\[
+    \norm{\sum_{T, T'\in\T}\chi_T\chi_{T'}}_{q/2}^{q/2}\leq\sum_{k=0}^{O(\log 1/\delta)}\norm{\sum_{T, T': \angle(T, T')\sim 2^{-k}}\chi_T\chi_{T'}}_{q/2}^{q/2} + \norm{\sum_{T, T': T=T'}\chi_T\chi_{T'}}_{q/2}^{q/2}.
+\]
+容易证明 $T=T'$ 的一项可以被式 \eqref{eq: bilinear 1} 的右边吸收掉; 再由 $O(\log 1/\delta)\lessapprox 1$, 要证 \eqref{eq: hairbrush to prove} 就只需证对任意 $k$ 都有
+\begin{equation}
+    \label{eq: bilinear 2}
+    \norm{\sum_{T, T': \angle(T, T')\sim 2^{-k}}\chi_T\chi_{T'}}_{q/2}^{q/2}\lessapprox\delta^{n-q(n-1)}.
+\end{equation}
+
+接着我们尝试对 \eqref{eq: bilinear 2} 做尺度变换, 希望使得参与求和的圆柱体的夹角和 $k$ 无关. 首先把 $S^{n-1}$ 分割为若干个半径为 $2^{-k}/10$ 的球冠 $C_i$, 记 $\T_i\subset\T$ 为轴向落在 $C_i$ 中的圆柱体的子集. 于是要证 \eqref{eq: bilinear 2}, 只需证对每个 $i$ 都有
+\begin{equation}
+    \label{eq: bilinear 2.5}
+    \norm{\sum_{T, T'\in\T_i: \angle(T, T')\sim 2^{-k}}\chi_T\chi_{T'}}_{q/2}^{q/2}\lessapprox\delta^{n-q(n-1)}.
+\end{equation}  
+不妨设 $C_i$ 的中心是 $e_n$, 然后考虑前 $n-1$ 个坐标的伸缩变换
+\[
+    L(\underline{x}, x_n) = (2^{k}\underline{x}, x_n),
+\]
+则式 \eqref{eq: bilinear 2} 等价于
+\begin{equation}
+    \label{eq: bilinear 3}
+    \norm{\sum_{T, T'\in\T_i: \angle(T, T')\sim 2^{-k}}\chi_{L(T)}\chi_{L(T')}}_{q/2}^{q/2}\lessapprox 2^{-k(n-1)}\delta^{n-q(n-1)}.
+\end{equation}
+大致可以认为 $L(T)$ 是 $1\times 2^k\delta$ 圆柱体, 其轴向认为是落在 $2^kC_i$ 上, 于是当 $T, T'\in\T_i$ 时
+\[
+    \angle(L(T), L(T')) = \abs{\omega_{L(T)}-\omega_{L(T')}}\sim 2^k\abs{\omega_T-\omega_{T'}}\sim 1.
+\]
+基于此观察, 如果用 $2^k\delta$ 代替 $\delta$, $2^k C_i$ 代替 $C_i$, 注意到 \eqref{eq: bilinear 3} 右边 $\lessapprox (2^k\delta)^{n-q(n-1)}$, 就会发现 \eqref{eq: bilinear 3} 被 \eqref{eq: bilinear 2.5} 在 $k=0$ 的情形所蕴含. 由此问题又可以化归为证明
+\begin{equation}
+    \label{eq: bilinear 4}
+    \norm{\sum_{T, T': \angle(T, T')\sim 1}\chi_T\chi_{T'}}_{q/2}^{q/2}\lessapprox\delta^{n-q(n-1)},
+\end{equation}
+其中 $T, T'$ 的轴向都落在某个半径为 $1/10$ 的球冠内. 由此, 我们就只需要考虑夹角近似是一个定值的圆柱体, 从而忽略那些夹角很小的情形.
+
+另外注意到, 要证明 \eqref{eq: bilinear 4}, 只需证
+\begin{equation}
+    \label{eq: bilinear}
+    \norm{\left(\sum_{T\in\T}\chi_T\right)\left(\sum_{T'\in\T'}\chi_{T'}\right)}_{q/2}^{q/2}\lessapprox\delta^{n-q(n-1)},
+\end{equation}
+其中 $\T$ 和 $\T'$ 是两族轴向 $\delta$-分离的 $1\times\delta$ 圆柱体, 它们的轴向都落在 $B(e_n, 1/10)$ 内, 并且任意 $T\in\T$ 和 $T'\in\T'$ 都满足 $\angle(T, T')\sim 1$. 式 \eqref{eq: bilinear} 的好处在于, 其中包含了体现 ``重数'' 的 $\sum\chi_T$, 这有利于组合技巧的应用. 
+
+\subsubsection{``刷子'' 的构造}
+
+下面尝试对 \eqref{eq: bilinear} 施展二进制分割的技巧. 对 $\mu, \mu'\in 2^{\Z}$ ($=\set{2^s: s\in\Z}$), 定义
+\[
+    E_{\mu, \mu'} = \set{x\in\R^n: \sum_{T\in\T}\chi_T(x)\sim\mu, \sum_{T\in\T'}\chi_{T'}(x)\sim\mu'}.
+\]
+于是
+\[
+    \norm{\left(\sum_{T\in\T}\chi_T\right)\left(\sum_{T'\in\T'}\chi_{T'}\right)}_{q/2}^{q/2}\sim \sum_{\mu, \mu'}(\mu\mu')^{q/2}\abs{E_{\mu, \mu'}}.
+\]
+由于 $\mu$ 和 $\mu'$ 的取值范围是从 $1$ 到 $O(\delta^{1-n})$, 从而 $\mu$ 和 $\mu'$ 都只有 $O(\log 1/\delta)$ 种取值, 而 $O(\log 1/\delta)\lessapprox 1$, 故要证 \eqref{eq: bilinear} 就只需证每对 $\mu, \mu'$ 都满足
+\begin{equation}
+    \label{eq: Dyadic partition, mu}
+    (\mu\mu')^{q/2}\abs{E_{\mu, \mu'}}\lessapprox\delta^{n-q(n-1)}.
+\end{equation}
+不失一般性, 我们还可以假设 $\abs{E_{\mu, \mu'}}\geq\delta^{10n}$ (否则 \eqref{eq: Dyadic partition, mu} 是平凡的).
+
+取定 $\mu, \mu'$. 为估计 $\abs{E_{\mu, \mu'}}$, 注意到
+\begin{equation}
+    \label{eq: E_mu representation}
+    \mu\mu'\abs{E_{\mu, \mu'}} \sim \sum_{T\in\T}\sum_{T'\in\T'}\int_{E_{\mu, \mu'}}\chi_T\chi_{T'}.
+\end{equation}
+对上面式子的右边再次二进制分割. 对 $\lambda, \lambda'\in 2^{\Z}$, 令
+\begin{align*}
+    \T_\lambda &= \set{T\in\T: \abs{T\cap E}\sim\lambda\abs{T}},\\
+    \T_\lambda' &= \set{T'\in\T': \abs{T'\cap E}\sim\lambda\abs{T'}}.
+\end{align*}
+不难证明 \eqref{eq: E_mu representation} 右边的求和中, $\lambda<\delta^{20n}$ 或 $\lambda'<\delta^{20n}$ 的部分很小, 可以被 \eqref{eq: E_mu representation} 的左端吸收掉 (利用 $\abs{E_{\mu, \mu'}}\geq\delta^{10n}$), 于是
+\[
+    \mu\mu'\abs{E_{\mu, \mu'}} \sim \sum_{\lambda\geq\delta^{20n}}\sum_{\lambda'\geq\delta^{20n}}\sum_{T\in\T_\lambda}\sum_{T'\in\T'_{\lambda'}}\int_{E_{\mu, \mu'}}\chi_T\chi_{T'}.
+\]
+其中 $\delta^{20n}\leq\lambda, \lambda'\leq 1$, 故最多只有 $O(\log 1/\delta)$ 项, 故由抽屉原理, 必然存在某一对 $\lambda, \lambda'$ 使得
+\begin{equation}
+    \label{eq: lambda exist}
+    \mu\mu'\abs{E_{\mu, \mu'}}\approx\sum_{T\in\T_\lambda}\sum_{T'\in\T'_{\lambda'}}\int_{E_{\mu, \mu'}}\chi_T\chi_{T'}
+    % = \int_{E_{\mu, \mu'}}\sum_{T\in\T_\lambda}\chi_T\sum_{T'\in\T'_{\lambda'}}\chi_{T'}.
+\end{equation}
+
+我们首先导出一个 $\lambda$ 的下界估计. 由 \eqref{eq: lambda exist},
+\begin{align*}
+    \mu\mu'\abs{E_{\mu, \mu'}}&\approx\int_{E_{\mu, \mu'}}\sum_{T\in\T_\lambda}\chi_T\sum_{T'\in\T'_{\lambda'}}\chi_T'\ls\int_{E_\mu}\mu'\sum_{T\in\T_\lambda}\chi_T\\
+    &\sim\mu'\sum_{T\in\T_\lambda}\abs{T\cap E_{\mu, \mu'}}\sim\mu'\lambda\delta^{n-1}\#\T_\lambda\ls\mu'\lambda.
+\end{align*}
+从而
+\begin{equation}
+    \label{eq: lambda lower bound}
+    \lambda\gtrapprox\mu\abs{E_{\mu, \mu'}}.
+\end{equation}
+
+然后我们尝试利用 \eqref{eq: lambda exist} 构造一个 ``高重数'' 的圆柱体.
+\[
+    \sum_{T\in\T_\lambda}\sum_{T'\in\T'_{\lambda'}}\int_{E_{\mu, \mu'}}\chi_T\chi_{T'} = \sum_{T\in\T_\lambda}\sum_{T'\in\T'_{\lambda'}}\abs{E\cap T\cap T'}\leq\sum_{T\in\T_\lambda}\sum_{T'\in\T'_{\lambda'}}\abs{T\cap T'},
+\]
+并且 $\#\T'_{\lambda'}\ls\delta^{1-n}$, 故由 \eqref{eq: lambda exist} 可知存在 $T'\in\T'_{\lambda'}$ 使得
+\[
+    \sum_{T\in\T_{\lambda}}\abs{T\cap T'}\gtrapprox\mu\mu'\abs{E_{\mu, \mu'}}\delta^{n-1}.
+\]
+而 $\angle(T, T')\sim 1$, 从而 $\abs{T\cap T'}\ls\delta^{n}$, 由此可知存在 $T'\in\T'_{\lambda'}$ 使得
+\begin{equation}
+    \label{eq: high-multi tube exist}
+    \delta^n\#\set{T\in\T_\lambda: T\cap T'\neq\emptyset}\gtrapprox\delta^{n-1}\mu\mu'\abs{E_{\mu, \mu'}}.
+.\end{equation}
+至此, 我们就找到了一个 $T'\in\T'_{\lambda'}$, 其 ``重数'' 满足下界估计 \eqref{eq: high-multi tube exist}. 接下来我们将尝试用此 $T'$ 为 ``刷柄'', 尝试施展证明命题 \ref{prop: finite field hairbrush} 的论证方法.
+
+\subsubsection{利用 ``刷子'' 导出估计}
+
+取上一小节中构造的 $\mu, \mu', \lambda, \lambda'\in 2^{\Z}$, 以及 ``刷柄'' $T'\in\T'_{\lambda'}$. 记 $\mb{H}=\set{T\in\T_\lambda: T\cap T'\neq\emptyset}$ 为 ``刷毛'' 的集合. 由 \eqref{eq: high-multi tube exist} 可知
+\begin{equation}
+    \label{eq: num of hairbrush}
+    \#\mb{H}\gtrapprox\delta^{-1}\mu\mu'\abs{E_{\mu, \mu'}}.
+\end{equation}
+我们希望证明 \eqref{eq: Dyadic partition, mu} 在 $q'=(n+2)/2$ 时的情形, 即证明
+\begin{equation}
+    \label{eq: hairbrush to prove}
+    (\mu\mu')^{(n+2)/2n}\abs{E_{\mu, \mu'}}\lessapprox\delta^{-(n-2)/n}
+\end{equation}
+
+我们希望取适当的 $C$, 去掉使得 $T'$ 的邻域 $N=\set{x\in\R^n:\dist(x, T')<C^{-1}\lambda}$ 之后 $\mb{H}$ 中的圆柱体重叠程度比较低. 注意到 $N$ 可以被 $O(\lambda\delta C^{-1})$ 个平行于 $T'$ 的 $1\times\delta$ 圆柱体 $\set{\tau}$ 所覆盖, 于是对任意 $T\in\mb{H}$ 都有
+\[
+    \int_{E_{\mu, \mu'}}\chi_{T\cap N}\leq\sum_{\tau}\abs{\tau\cap T}\ls\lambda\delta C^{-1}\delta^n;
+\]
+另一方面
+\[
+    \int_{E_{\mu, \mu'}}\chi_T = \abs{T\cap E_{\mu, \mu'}} \sim\lambda\delta^{n-1},
+\]
+令 $C$ 充分大即可使得对任意 $T\in\mb{H}$ 都有
+\[
+    \int_{E_{\mu, \mu'}}\chi_{T\sm N}\gs\lambda\delta^{n-1}.
+\]
+对 $T$ 求和, 就得到 $\set{T\sm N}$ 平均重数的下界估计
+\begin{equation}
+    \label{eq: avg multi of hairs}
+    \int_{E_{\mu, \mu'}}\sum_{T\in\mb{H}}\chi_{T\sm N}\gs\lambda\delta^{n-1}\#\mb{H}.
+\end{equation}
+
+类比命题 \ref{prop: finite field hairbrush} 的证明中的证明, 我们希望引入一些平面的估计来限制 $\mb{H}$ 的重叠. 于是我们尝试引入 $L^2$ 范数并应用 C\'ordoba 的估计. 由 \eqref{eq: avg multi of hairs} 以及 Cauchy-Schwarz 不等式可知,
+\begin{equation}
+    \label{eq: hairbrush L2 esti. lower}
+    \norm{\sum_{T\in\mb{H}}\chi_{T\sm N}}_2\gs\lambda\delta^{n-1}\#\mb{H}\abs{E_{\mu, \mu'}}^{-1/2}.
+\end{equation}
+然后我们再尝试估计 $\norm{\sum_{T\in\mb{H}}\chi_{T\sm N}}_2$ 的上界, 将其平方并做二进制分割:
+\begin{equation}
+    \label{eq: hairbrush L2 esti.}
+    \begin{split}
+    \norm{\sum_{T\in\mb{H}}\chi_{T\sm N}}_2^2 &= \sum_{T_1, T_2\in H}\abs{T_1\cap T_2\cap N^c}\\
+    & = \sum_{T_1\in\mb{H}}\abs{T_1\cap N^c} + \sum_{T_1\in\mb{H}}\sum_{k=0}^{O(\log 1/\delta)}\sum_{T_2\in\mb{H}: \angle(T_2, T_1)\sim 2^{-k}}\abs{T_1\cap T_2\cap N^c}.
+    \end{split}
+\end{equation}
+上面式子中的第一项 $\ls\#\mb{H}\delta^{n-1}$; 用 C\'ordoba 的估计 \eqref{eq: Cordoba Geo Esti.} 来控制第二项:
+\begin{equation}
+    \label{eq: hairbrush cordoba dyadic}
+    \begin{split}
+    \sum_{T_2\in\mb{H}: \angle(T_2, T_1)\sim 2^{k}}&\abs{T_1\cap T_2\cap N^c}\\
+    &\ls 2^{-k}\delta^n\#\set{T_2\in\mb{H}: \angle(T_1, T_2)\sim 2^{-k}, T_1\cap T_2\cap N^c\neq\emptyset}.
+    \end{split}
+\end{equation}
+然后需要用到一个几何上的事实: 圆柱体组成的 ``三角形'' 一定会落在平面的某个邻域内.
+
+\begin{lemma}[Wolff]
+    若 $T_1, T_2$ 与 $T'$ 相交, 并且 $\angle(T_1, T')\sim\angle(T_2, T')\sim 1$. 若 $T_1\cap T_2\cap N^c\neq\emptyset$, 并且 $\angle(T_1, T_2)\sim 2^{-k}$, 则 $T_2$ 落在 $T'$ 和 $T_1$ 的主轴确定的平面的 $O(\delta/\lambda)$ 邻域内.
+\end{lemma}
+
+限于篇幅, 我们略去上述引理的证明. 由此引理可以得到
+\begin{equation*}
+    2^k\delta^n\#\set{T_2\in\mb{H}: \angle(T_1, T_2)\sim 2^{-k}, T_1\cap T_2\cap N^c\neq\emptyset}
+    \ls\delta^{n-1}\lambda^{2-n},
+\end{equation*}
+代入 \eqref{eq: hairbrush cordoba dyadic} 和 \eqref{eq: hairbrush L2 esti.} 即可得到
+\[
+    \norm{\sum_{T\in\mb{H}}\chi_{T\sm N}}_2^2\ls\#\mb{H}\delta^{n-1}\lambda^{2-n}.
+\]
+再结合 \eqref{eq: hairbrush L2 esti. lower} 和 \eqref{eq: num of hairbrush}, 就得到
+\[
+    \mu\mu'\lambda^n\delta^{n-2}\lessapprox 1.
+\]
+然后代入 \eqref{eq: lambda lower bound}, 就得到
+\[
+    \mu^{n+1}\mu'\abs{E_{\mu, \mu'}}^n\lessapprox\delta^{2-n}.
+\]
+由 $\mu$ 和 $\mu'$ 的对称性, 故也有
+\[
+    \mu'^{n+1}\mu\abs{E_{\mu, \mu'}}^n\lessapprox\delta^{2-n}.
+\]
+以上两个式子相乘, 再开 $2n$ 次方, 即可得到 \eqref{eq: hairbrush to prove}. 至此就完成了定理 \ref{thm: Wolff} 的证明.
+
+\subsection{Dvir 的多项式方法}
+
+作为本节的结束, 我们介绍 Dvir 完全解决有限域 Kakeya 问题的多项式方法\cite{dvir2009size}. 但他的方法过于依赖有限域的性质, 无法如前文中 Bourgain 和 Wolff 的论证一样很好的推广到欧氏空间上.
+
+\begin{theorem}[Dvir]
+    \label{thm: Dvir}
+    设 $\F$ 是 $q$ 元有限域. 若 $K\subset\F^n$ 为 Kakeya 集, 则
+    \[
+        \# K\gs_n q^n.
+    \]
+\end{theorem}
+
+多项式方法依赖于如下基本的观察: 若任意 $d$ 次多项式 $f$ 都可被其在集合 $E\subset\F$ 上的取值完全确定, 即 $f\vert_E\equiv 0\implies f\equiv 0$, 则 $\# E\geq d+1$. 也就是说, 通过那些在 $E$ 上恒为零的多项式, 我们可以得出 $E$ 元素个数的估计. 事实上, 这种方法也可以推广到高维情形.
+
+\begin{lemma}
+    \label{lemma: 多项式方法}
+    假如 $E\subset\F^n$ 满足: 对任意 $f\in\F[x_1, \cdots, x_n]$ s.t. $\deg f\leq d$, 若 $f\vert_E = 0$ 则 $f=0$; 那么 $\# E\geq\binom{n+d}{n}$.
+\end{lemma}
+
+\begin{proof}
+    记 $\F[x_1, \cdots, x_n]_{\leq d}$ 为域 $\mb{F}$ 上不超过 $d$ 次的 $n$ 元多项式的集合. 考虑 $\F$-线性映射
+    \[
+        \Phi: \F[x_1, \cdots, x_n]_{\leq d}\to \F^E,\quad f\mapsto (f(x))_{x\in E}.
+    \]
+    由题设条件可知 $\ker\Phi=0$, 即 $\Phi$ 为单射. 而由组合数学的知识可知
+    \[
+        \dim \F[x_1, \cdots, x_n]_{\leq d} = \binom{n+d}{n},
+    \]
+    故 $\# E\geq\binom{n+d}{n}$.
+\end{proof}
+
+引理 \ref{lemma: 多项式方法} 的证明虽然很简单, 但它给了我们一种估计 $\F^n$ 中集合元素个数的方法 --- 考察次数多高的多项式能够被其在这个集合上的取值所完全确定.
+
+\begin{proof}[\pftitle 定理 \ref{thm: Dvir} 的证明]
+设 $K\subset\F^n$ 为 Kakeya 集. 由引理 \ref{lemma: 多项式方法} 可知, 我们只需证明:
+\begin{equation}
+    \label{eq: Dvir-poly-reduction}
+    \text{对任意 $f\in\F[x_1, \cdots, x_n]$ s.t. $\deg f\leq q-1$, 若 $f\vert_K=0$, 则 $f=0$.}
+\end{equation}
+因为由引理 \ref{lemma: 多项式方法} 可知 \eqref{eq: Dvir-poly-reduction} 蕴含着
+\[
+    \# K\geq\binom{n+q-1}{n}\sim_n q^n.
+\]
+
+下面我们证明 \eqref{eq: Dvir-poly-reduction}. 由 Kakeya 集的性质, 任取 $v\in\F^n\sm\set{0}$, 都存在 $x\in\F^n$ 使得 $\set{x+tv: t\in\F}\subset K$, 从而 $g(t) := f(x+tv)$ 恒为零. 记 $f_i$ 为 $f$ 中所有 $i$ 次项的和 ($1\leq i\leq d$), 由于 $g(t)$ 是 $d$ 次多项式, 故 $g(t)$ 的 $d$ 次项系数为 $f_d(v)$, 于是 $f_d(v)=0\ \forall v\in\F^n\sm\set{0}$. 而 $f_d$ 齐 $d$ 次多项式, 从而 $f_d$ 在 $\F^n$ 上恒为零. 重复上述步骤, 就可以依次说明 $f_{d-1}=0$, $f_{d-2}=0$, 等等. 于是 $f_i=0\ \forall i$, 从而 $f=0$. 如此就完成了证明.
+\end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Kakeya 问题和 Fourier 分析的联系}
+
+Kakeya 问题和组合、数论、调和分析等多个领域中的多个重要问题有广泛的联系. 本节我们着重于 Fourier 分析, 简要介绍 Kakeya 问题和 Fourier 求和问题以及限制性估计问题之间的联系.
+
+\subsection{球乘子的 \texorpdfstring{$L^p$}{L\^{}p} 无界性}
+
+对 $f\in\mc{S}(\R^n)$, 定义 Fourier 部分和算子
+\[
+    S_Rf(x) := \int_{\abs{\xi}\leq R} \hat{f}(\xi)e^{2\pi i\xi\cdot x}\d\xi.
+\]
+由 Fourier 逆转公式可知在每一点 $x\in\R^n$ 处都有 $S_Rf(x)\to f(x)\ (R\to\infty)$. 接下来我们希望考察 $\set{S_Rf}$ 的 $L^p$ 收敛性, 即 $\norm{S_Rf-f}_p\to 0$ 是否成立.
+
+由一致有界原理可知, $\norm{S_Rf-f}_p\to 0\ (\forall f\in\mc{S}(\R^n))$ 的充要条件是存在与 $R$ 无关的常数 $C$ 使得
+\[
+    \norm{S_Rf}_p\leq C\norm{f}_p\quad\forall f\in\mc{S}(\R^n).
+\]
+伸缩变换之后就等价于
+\begin{equation*}
+    % \label{eq: 球乘子有界性}
+    \norm{S_1f}_p\leq C\norm{f}_p,\quad\forall f\in\mc{S}(\R^n).
+\end{equation*}
+在 $n=1$ 时, $S_1$ 就是 Hilbert 变换, 从而它在 $L^p\ (1<p<\infty)$ 上是有界的. 在 $n\geq 2$ 的情形, 由 Plancherel 定理可知 $S_1$ 在 $L^2$ 上有界; 但对 $p\neq 2$ 的 $L^p$ 空间, Fefferman 在 1970 年证明了如下出人意料的结果:
+
+\begin{theorem}[Fefferman\cite{fefferman1971multiplier}]
+    \label{thm: Fefferman Disk Multiplier}
+    若 $n\geq 2$, $1<p<\infty$, 则 $S_1$ 在 $L^p$ 上有界当且仅当 $p=2$.
+\end{theorem}
+
+Fefferman 证明定理 \ref{thm: Fefferman Disk Multiplier} 的方法依赖于 Besicovitch 给出的零测度 Kakeya 集的构造, 这也是 Kakeya 问题在 Fourier 分析中最早的应用之一. 下面我们介绍 Fefferman 的证明方法.
+
+首先, 由下面的引理 (为行文简洁我们略去证明), 我们只需证明 $n=2$ 时 $S_1$ 的无界性.
+
+\begin{lemma}[De Leeuw]
+    \label{lemma: De Leeuw}
+    设 $m\in L^\infty(\R^n)$. 定义 $\R^n$ 上的 Fourier 乘子
+    \[
+        \widehat{Tf} := m\hat{f}\quad\forall f\in\mc{S}(\R^n)
+    \]
+    以及 $\R^{n-1}$ 上的 Fourier 乘子
+    \[
+        \widehat{T_0f}(\xi') := m(\xi', 0)\hat{f}(\xi')\quad\forall f\in\mc{S}(\R^{n-1}),\ \forall \xi'\in\R^{n-1}.
+    \]
+    那么, $T$ 在 $L^p(\R^n)$ 上有界蕴含 $T_0$ 在 $L^p(\R^{n-1})$ 上有界.
+\end{lemma}
+
+为了否定 $S_1$ 的有界性, 我们需要估计 $S_1f = f * \chi_{B_1}^\vee$ 的下界. 我们尝试用半平面 $H=\set{(\xi_1,\xi_2)\in\R^2: \xi_1>0}$ 来逼近 $B_1$, 因为 $\chi_H^\vee$ 比 $\chi_{B_1}^\vee$ 有更简单的表达式.
+
+\begin{lemma}
+    \label{lemma: 球乘子vs半平面乘子}
+    若 $S_1$ 在 $L^p(\R^2)$ 上有界, 则 $S_Hf := (\chi_H\hat{f})^{\vee}$ 也在 $L^p(\R^2)$ 上有界. 
+\end{lemma}
+
+\begin{proof}
+    注意到当 $R\to\infty$ 时, 半平面 $H$ 可以用圆盘 $B(R, R)$ 来逼近, 因此我们考虑平移之后的球乘子 $S_R'f := (\chi_{B(R, R)}\hat{f})^{\vee}$. 因为 $S_1$ 在 $L^p$ 上有界, 由前面的讨论可知 $\set{S_R}$ 在 $L^p$ 上一致有界, 从而 $\set{S_R'}$ 也在 $L^p$ 上一致有界. 不难验证 $\norm{S_R'f-S_Hf}_p\to 0\ \forall f\in C_c^\infty$, 从而 $S_H$ 也在 $L^p(\R^2)$ 上有界. 
+\end{proof}
+
+我们接下来只需要说明 $S_H$ 在 $L^p(\R^2)\ (p>2)$ 上是无界的. 在分布的意义下
+\[
+    \chi_H^{\vee}(x_1, x_2) = \delta_0(x_2)\,\text{sgn}^\vee(x_1) = \frac{i}{\pi}\delta_0(x_2)\,\text{p.v.}\left(\frac{1}{x_1}\right),
+\]
+于是
+\begin{equation}
+    \label{eq: 半平面乘子}
+    S_H f (x_1, x_2) = (f * \chi_H^\vee) (x_1, x_2) = \frac{i}{\pi}\lim_{\e\to 0}\int_{\abs{x_1-y}>\e}f(y, x_2)\,\frac{dy}{x_1 - y}.
+\end{equation}
+由 \eqref{eq: 半平面乘子} 即可得出:
+
+\begin{lemma}
+    设 $\delta>0$, $T=[0, 1]\times [0, \delta]$. 若 $f\in C_c^\infty(T)$ 是一个截断函数, 满足 $0\leq f\leq 1$ 并且 $f$ 在 $[1/3, 2/3]\times [\delta/3, 2\delta/3]$ 上恒为 1, 则在将 $T$ 沿 $x_1$ 轴平移 10 个单位后得到的矩形 $T'$ 上, 有 $\abs{S_Hf}\gs 1$.
+\end{lemma}
+
+由此我们得出一个构造反例的思路: 选取一族 $1\times\delta$ 矩形 $\set{T}$, 在每个 $T$ 上取截断函数 $f_T$. 考虑函数 $f=\sum_{T} f_T$. 如果我们能够使得 $\set{T'}$ 的重合程度很高, 而 $S_H f_T$ 在 $T'$ 上比较大, 那么 $\norm{S_Hf}_p = \norm{\sum_{T}S_Hf_T}_p$ 就会比较大; 然后我们可以使得 $\set{T}$ 的重合程度很低 (因为 $T'$ 和 $T$ 之间的距离很大), 从而 $\norm{f}_p$ 就很小. 这时 Besicovitch 的构造就派上用场了, 它告诉我们的结论是:
+
+\begin{lemma}
+    \label{lemma: Besicovitch-Fefferman}
+    对任意 $M>0$, 存在 $\delta>0$ 以及有限个\emph{两两不交的} $1\times\delta$ 矩形 $\set{T}$, 使得
+    \[
+        \abs{\bigcup_{T} T'}\leq M^{-1}\abs{\bigcup_{T} T}.
+    \]
+\end{lemma}
+
+然后我们还需要解决一个问题: 在计算 $S_Hf = \sum_{T}S_Hf_T$ 的 $L^p$ 范数的时候, $S_H f_T$ 之间有可能存在很多的正负抵消, 导致 $\norm{S_Hf_T}_p$ 不够大. 我们可以通过 "随机化" 的技巧来估计正负抵消的影响. 通过概率论中的 Khintchine 不等式, 我们可以刻画正负抵消的平均程度.
+
+\begin{lemma}[Khintchine 不等式]
+    设 $\set{\e_T}$ 是独立的以 1/2 概率分别取 $+1$ 和 $-1$ 的随机变量序列. 那么对任意 $f_T\in L^p(\R^n)\ (0<p<\infty)$, 有
+    \[
+        \mb{E}\norm{\sum_{T}\e_Tf_T}_p^p \sim_p \norm{\left(\sum_T\abs{f_T}^2\right)^{1/2}}_p^p.
+    \]
+\end{lemma}
+
+有了上述的所有准备之后, 我们就可以得出定理 \ref{thm: Fefferman Disk Multiplier} 的证明.
+
+\begin{proof}[\pftitle 定理 \ref{thm: Fefferman Disk Multiplier} 的证明]
+由 $S_H$ 的自伴性以及引理 \ref{lemma: 球乘子vs半平面乘子} 和引理 \ref{lemma: De Leeuw}, 我们只需证明 $2<p<\infty$ 时 $S_H$ 在 $L^p(\R^2)$ 上无界.
+
+沿用前面的记号. 考虑 $f=\sum_T\e_T f_T$, 那么由 Khintchine 不等式可知
+\[
+    \mb{E}\norm{S_Hf}_p^p \sim_p \norm{\left(\sum_T\abs{S_Hf_T}^2\right)^{1/2}}_p^p.
+\]
+由于在 $T'$ 上 $\abs{S_Hf_T}\gs 1$, 于是
+\[
+    \norm{\left(\sum_T\abs{S_Hf_T}^2\right)^{1/2}}_p^p\gs\norm{\left(\sum_T\chi_{T'}\right)^{1/2}}_p^p = \norm{\sum_T\chi_{T'}}_{p/2}^{p/2}.
+\]
+由 H\"older 不等式以及引理 \ref{lemma: Besicovitch-Fefferman},
+\[
+    \norm{\sum_T\chi_{T'}}_1\leq\norm{\sum_T\chi_{T'}}_{p/2}\abs{\bigcup_T T'}^{1-2/p}\leq M^{2/p-1}\abs{\bigcup_T T}.
+\]
+由 $\set{T}$ 两两无交, 我们有
+\begin{align*}
+    \norm{\sum_T\chi_{T'}}_1 &= \sum_T\abs{T'} = \sum_T\abs{T} = \abs{\bigcup_T T},\\
+    \norm{f}_p^p &= \sum_T\norm{f_T}_p^p.
+\end{align*}
+综合以上各式, 化简之后可得
+\[
+    \mb{E}\norm{S_Hf}_p^p\gs M^{p/2-1}\norm{f}_p^p.
+\]
+
+由期望的性质, 必然存在 $\set{\e_T}$ 的某种取值, 使得 $\norm{S_Hf}_p^p$ 的值不小于其期望. 由此我们就构造出了一个函数 $f$ 使得
+\[
+    \norm{S_Hf}_p\gs M^{1/2-1/p}\norm{f}_p.
+\]
+由 $M$ 的任意性即可得到当 $p>2$ 时 $S_H$ 在 $L^p$ 上无界. 
+\end{proof}
+
+Fefferman 给出的构造事实上是非常弱的, 只需对球乘子 $S_1$ 稍微做一些磨光就可以使得他的反例失效. 定义 \textbf{Bochner-Riesz 算子}为
+\[
+    \widehat{S_1^\e f}(\xi) = (1-\abs{\xi})^\e\chi_{B(0, 1)}\hat{f}(\xi).
+\]
+算子 $S_1^\e$ 的 $L^p$ 有界性至今仍然是公开问题.
+
+\begin{conjecture}[Bochner-Riesz]
+    对任意 $\e>0$ 和 $2n/(n+1)<p<2n/(n-1)$, 算子 $S_1^\e$ 在 $L^p$ 上是有界的. 
+\end{conjecture}
+
+Fefferman 的反例无法使得算子 $S_1^\e$ 无界, 而关于 Kakeya 集的进一步形式也许可以帮助构造出更强的反例.
+从 Fefferman 的构造可以得出 Bochner-Riesz 猜想蕴含 Kakeya 猜想. 而在 1991 年 Bourgain 的一篇论文中给出了一种从 Kakeya 猜想的结果推导出 Bochner-Riesz 猜想的部分结果的论证方法.\cite{bourga1991besicovitch}
+
+\subsection{限制性猜想和 Kakeya 猜想的关系}
+
+\textbf{Fourier 限制性问题}指的是: 对 $f\in L^p(\R^n)\ (1\leq p\leq 2)$, 其 Fourier 变换 $\hat{f}\in L^{p'}(\R^n)$ 在集合 $S\subset\R^n$ 上的限制是否有意义? 例如当 $p=1$ 时, $\hat{f}$ 是连续函数, 因而定义其在任意集合 $S$ 上的限制; 但当 $p=2$ 时, $\hat{f}\in L^2(\R^n)$ 是在几乎处处的意义下定义的, 这时 $\hat{f}$ 在 Lebesgue 零测集 $S$ 上的限制就不一定有明确的意义. 
+
+设 $S$ 是 $\R^n$ 中的超曲面, $d\sigma$ 是其表面测度. 对 $p, q\in [1, \infty]$, 若
+\begin{equation}
+    \label{eq: 限制性估计}
+    \nnorm{\hat{f}}_{L^q(S,\, d\sigma)}\ls\norm{f}_{L^p(\R^n)}\quad\forall f\in\mc{S}(\R^n),
+\end{equation}
+那么算子 $R: f\in\mc{S}(\R^n)\mapsto\hat{f}\vert_S$ 可以唯一地延拓为 $L^p(\R^n)\to L^q(S,\, d\sigma)$ 的有界线性算子, 从而可以把 $R$ 看成是将 $L^p$ 函数的 Fourier 变换 ``限制'' 为 $S$ 上的 $L^p$ 函数. 也就是说, 解决 Fourier 限制性问题本质上是寻找形如 \eqref{eq: 限制性估计} 的估计; 我们称形如 \eqref{eq: 限制性估计} 的估计为 \textbf{限制性估计}. 
+
+利用对偶性可知, 式 \eqref{eq: 限制性估计} 等价于
+\begin{equation}
+    \label{eq: 对偶限制性估计}
+    \nnorm{\widehat{gd\sigma}}_{L^{p'}(\R^n)}\ls\norm{g}_{L^{q'}(S^{n-1})}\quad\forall g\in L^{\infty}(S^{n-1}), 
+\end{equation}
+其中
+\[
+    \widehat{gd\sigma}(\xi) = \int_{S^{n-1}}g(x)e^{-2\pi i\xi\cdot x}\d\sigma(x).
+\]
+式 \eqref{eq: 对偶限制性估计} 也称为\textbf{限制性估计}.
+
+在 $S=S^{n-1}$ 为球面的情形, Stein 提出了如下猜想:
+
+\begin{conjecture}[球面限制性猜想]
+    若 $q>2n/(n-1)$, $q\geq (n+1)p'/(n-1)$, $p\geq 1$,\footnote{这些指标的条件是限制性估计成立的必要条件.} 则
+    \begin{equation*}
+        \nnorm{\widehat{gd\sigma}}_{L^{q}(\R^n)}\ls\norm{g}_{L^{p}(S^{n-1})}\quad\forall g\in L^\infty(S^{n-1}). 
+    \end{equation*}
+\end{conjecture}
+
+事实上, 限制性估计 \eqref{eq: 限制性估计} 可以导出 Kakeya 极大算子的估计, 这个发现最早来自 Beckner 等人\cite{beckner1989note}. 
+
+\begin{proposition}
+    设 $q\geq 2n/(n-1)$. 那么, 限制性估计
+    \label{prop: Restriction imply Kakeya}
+    \begin{equation}
+        \label{eq: 带 epsilon 的限制性估计}
+        \nnorm{\widehat{gd\sigma}}_{q+\e}\ls_\e\norm{g}_{p}\quad\forall g\in L^\infty(S^{n-1})
+    \end{equation}
+    蕴含 Kakeya 极大算子的估计
+    \begin{equation}
+        \label{eq: Kakeya induced by Restriction}
+        \norm{\sum_{T\in\T}\chi_T}_{q/2}\ls_\e\delta^{2(2n/q-(n-1)-\e)}.
+    \end{equation}
+    其中 $\T$ 是轴向 $\delta$-分离的一族 $1\times\delta$ 圆柱体.
+\end{proposition}
+
+下面开始证明 \ref{prop: Restriction imply Kakeya}. 首先注意到, 由 H\"older 不等式可知, 式 \eqref{eq: 带 epsilon 的限制性估计} 蕴含
+\begin{equation}
+    \label{eq: 局部限制性估计}
+    \nnorm{\widehat{gd\sigma}}_{L^q(B(0, R))}\ls_\e R^\e\norm{g}_{L^p(S^{n-1})}\quad\forall g\in L^\infty(S^{n-1}).
+\end{equation}
+通常称 \eqref{eq: 局部限制性估计} 为\textbf{指数为 $\e$ 的局部限制性估计}. 然后注意到如下的引理, 它可以看成是不确定性原理的某种形式:
+
+\begin{lemma}
+    \label{lemma: Knapp example}
+    对 $\omega\in S^{n-1}$, 定义 $R\times\sqrt{R}$ 圆柱体
+    \[
+        T_\omega := \set{\xi\in\R^n:\abs{\xi\cdot\omega}\leq R, \abs{x-(x\cdot\omega)\omega}\leq\sqrt{R}}
+    \]
+    若 $f_\omega$ 是球冠 $B(\omega, 1/\sqrt{100R})\cap S^{n-1}$ 的特征函数, 则
+    \[
+        \abs{\widehat{fd\sigma}(\xi)}\sim R^{-(n-1)/2}\quad\forall\xi\in T_\omega.
+    \]
+\end{lemma}
+
+\begin{proof}
+    注意到当 $\xi\in T_\omega$ 以及 $x\in B(\omega, 1/\sqrt{100R})$ 时, $\abs{\xi\cdot x-\xi\cdot\omega}\leq 1/10$, 故
+    \begin{align*}
+        \abs{\widehat{f_\omega d\sigma}(\xi)} &= \abs{\int_{\abs{x-\omega}<1/\sqrt{100R}}e^{-2\pi i\xi\cdot x}\d\sigma(x)}\\
+        &\sim\abs{\int_{\abs{x-\omega}<1/\sqrt{100R}}e^{-2\pi i\xi\cdot \omega}\d\sigma(x)}\\
+        &\sim R^{-(n-1)/2}.
+    \end{align*}
+    这就完成了证明.
+\end{proof}
+
+在上述引理中, 函数 $e^{2\pi ix\cdot h}f_\omega(x)$ 在平移后的圆柱体 $T_\omega-h$ 上的绝对值 $\sim R^{-(n-1)/2}$. 由此, 对任意极大的轴向 $(1/\sqrt{100R})$-分离的 $R\times\sqrt{R}$ 圆柱体族 $\T=\set{T}$, 可以找到函数 $f_T: S^{n-1}\to\C$ 使得
+\begin{align*}
+    &\spt f_T\subset B(\omega_T, 1/\sqrt{100R}),\quad\abs{f_T}=1;\\
+    &\abs{\widehat{f_Td\sigma}(\xi)}\sim R^{-(n-1)/2}\quad\forall\xi\in T.
+\end{align*}
+当 $\set{T}$ 的重叠程度很高时, 和式 $\sum_T\widehat{f_Td\sigma}$ 中就会有很多正负抵消的项. 然后我们就可以采用标准的随机化技巧来估计抵消的程度.
+
+\begin{proof}[\pftitle 命题 \ref{prop: Restriction imply Kakeya} 的证明]
+取 $\set{\e_T}$ 为独立地以 $1/2$ 概率分别取 $\pm 1$ 的随机变量序列, 考虑函数 $f=\sum_T\e_Tf_T$. 不妨设任意 $T$ 都包含于 $B(0, 100R)$, 则由 Khintchine 不等式可知
+\begin{equation*}
+    \mb{E}\nnorm{\widehat{fd\sigma}}_{L^q(B(0, 100R))}^q\sim\norm{\left(\sum_T\abs{\widehat{f_Td\sigma}}^2\right)^{1/2}}_{L^q(B(0, 100R))}^q.
+\end{equation*}
+由于 $\widehat{f_Td\sigma}$ 在 $T$ 上的绝对值 $\sim R^{-(n-1)/2}$, 故
+\[
+    \mb{E}\nnorm{\widehat{fd\sigma}}_q^q\gs\norm{\left(\sum_T R^{-(n-1)}\abs{\chi_T}^2\right)^{1/2}}_q^q = R^{-(n-1)q/2}\norm{\sum_T\chi_T}_{q/2}^{q/2}.
+\]
+另一方面, $\set{f_T}$ 的支集几乎不重叠, 可以验证
+\[
+    \norm{f}_p\sim\left(\sum_T\norm{f_T}_p^p\right)^{1/p}\sim\left(R^{-(n-1)/2}\#\T\right)^{1/p}\sim 1.
+\]
+结合以上两式, 利用局部限制性估计 \eqref{eq: 局部限制性估计}, 即可得到
+\[
+    \norm{\sum_T\chi_T}_{q/2}\ls_\e R^{n-1+\e}.
+\]
+
+我们上面得出的估计离 \eqref{eq: Kakeya induced by Restriction} 一些差距. 经观察之后考虑尺度变换. 记 $\tilde{T}=RT$ 用 $\tilde{T}$ 代替 $T$ 重复上述讨论, 可得
+\[
+    \norm{\sum_T\chi_{\tilde{T}}}_{q/2}\ls_\e R^{-2n/q+n-1+\e}.
+\]
+然后再把 $R^2\times R$ 伸缩为 $1\times\delta$ 即可得到 \eqref{eq: Kakeya induced by Restriction}. ($\delta=R^{-1/2}$)
+\end{proof}
+
+由命题 \ref{prop: Restriction imply Kakeya} 不难看出, 球面限制性猜想蕴含 Kakeya 极大算子猜想, 但至今仍然不知道反过来的结论是否正确. 在 1991 年 Bourgain 证明了反方向的部分结果.
+
+\begin{theorem}[Bourgain\cite{bourga1991besicovitch}]
+    如果有 Kakeya 极大算子的估计
+    \[
+        \norm{\sum_{T\in\T}\chi_T}_{p'}\ls_\e\delta^{-n/p+1-\e},
+    \]
+    其中 $\T$ 是轴向 $\delta$-分离的一族 $1\times\delta$ 圆柱体; 那么当
+    \[
+        q > 2\left(\frac{p'}{n+1}+\frac{n}{n-1}\right)
+    \]
+    时, 有限制性估计
+    \[
+        \nnorm{\widehat{fd\sigma}}_p\ls\norm{f}_\infty\quad\forall f\in L^\infty(S^{n-1}).
+    \]
+\end{theorem}
+
+在 Bourgain 1991 年的论文\cite{bourga1991besicovitch}中, 他正是首先利用 bush 论证得出了当时最优的 Kakeya 极大算子的估计, 然后由此推动了限制性猜想的进展. 
+
+\bibliography{ref.bib}
+\bibliographystyle{plain}
+
+\end{document}
